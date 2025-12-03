@@ -1,8 +1,8 @@
 ﻿namespace bezpieczna_paczkaApp
 {
-    // This 'partial' class definition splits the StartWindow class across two files.
+    // This 'partial' class definition splits the GameWindow class across two files.
     // This file is for the designer-generated code.
-    partial class StartWindow
+    partial class GameWindow
     {
         
         /// Required designer variable.
@@ -30,13 +30,19 @@
 
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StartWindow));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameWindow));
             picLogo = new PictureBox();
             picSelectLevel = new PictureBox();
             picExitGame = new PictureBox();
+            picLevel1 = new PictureBox();
+            picLevel2 = new PictureBox();
+            picLevel3 = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)picLogo).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picSelectLevel).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picExitGame).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)picLevel1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)picLevel2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)picLevel3).BeginInit();
             SuspendLayout();
             // 
             // picLogo
@@ -79,34 +85,82 @@
             picExitGame.TabStop = false;
             picExitGame.Click += picExitGame_Click;
             // 
-            // StartWindow
+            // picLevel1
+            // 
+            picLevel1.BackColor = Color.Transparent;
+            picLevel1.Cursor = Cursors.Hand;
+            picLevel1.Location = new Point(50, 200);
+            picLevel1.Name = "picLevel1";
+            picLevel1.Size = new Size(290, 115);
+            picLevel1.SizeMode = PictureBoxSizeMode.Zoom;
+            picLevel1.TabIndex = 3;
+            picLevel1.TabStop = false;
+            picLevel1.Visible = false;
+            picLevel1.Click += picLevel1_Click;
+            // 
+            // picLevel2
+            // 
+            picLevel2.BackColor = Color.Transparent;
+            picLevel2.Cursor = Cursors.Hand;
+            picLevel2.Location = new Point(480, 200);
+            picLevel2.Name = "picLevel2";
+            picLevel2.Size = new Size(290, 115);
+            picLevel2.SizeMode = PictureBoxSizeMode.Zoom;
+            picLevel2.TabIndex = 4;
+            picLevel2.TabStop = false;
+            picLevel2.Visible = false;
+            picLevel2.Click += picLevel2_Click;
+            // 
+            // picLevel3
+            // 
+            picLevel3.BackColor = Color.Transparent;
+            picLevel3.Cursor = Cursors.Hand;
+            picLevel3.Location = new Point(910, 200);
+            picLevel3.Name = "picLevel3";
+            picLevel3.Size = new Size(290, 115);
+            picLevel3.SizeMode = PictureBoxSizeMode.Zoom;
+            picLevel3.TabIndex = 5;
+            picLevel3.TabStop = false;
+            picLevel3.Visible = false;
+            picLevel3.Click += picLevel3_Click;
+            // 
+            // GameWindow
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(1278, 1022);
-            ControlBox = false;
             Controls.Add(picExitGame);
             Controls.Add(picSelectLevel);
             Controls.Add(picLogo);
+            Controls.Add(picLevel1);
+            Controls.Add(picLevel2);
+            Controls.Add(picLevel3);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Margin = new Padding(4, 3, 4, 3);
             MaximizeBox = false;
-            Name = "StartWindow";
+            Name = "GameWindow";
             StartPosition = FormStartPosition.CenterScreen;
-            Load += StartWindow_Load;
+            Load += GameWindow_Load;
             ((System.ComponentModel.ISupportInitialize)picLogo).EndInit();
             ((System.ComponentModel.ISupportInitialize)picSelectLevel).EndInit();
             ((System.ComponentModel.ISupportInitialize)picExitGame).EndInit();
+            ((System.ComponentModel.ISupportInitialize)picLevel1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)picLevel2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)picLevel3).EndInit();
             ResumeLayout(false);
 
         }
 
         #endregion
 
-        // Declare the components so the logic file (StartWindow.cs) can access them
+        // Declare the components so the logic file (GameWindow.cs) can access them
         private System.Windows.Forms.PictureBox picLogo;
         private System.Windows.Forms.PictureBox picSelectLevel;
         private System.Windows.Forms.PictureBox picExitGame;
+        private System.Windows.Forms.PictureBox picLevel1; // Picture box for Level 1 selection button.
+        private System.Windows.Forms.PictureBox picLevel2; // Picture box for Level 2 selection button.
+        private System.Windows.Forms.PictureBox picLevel3; // Picture box for Level 3 selection button.
+        // END ADDITION
     }
 }
