@@ -9,94 +9,95 @@ namespace bezpieczna_paczkaApp
     
     public partial class GameWindow : Form
     {
-        
+
         /// Constructor for the Welcome Form.
-        
+        private MainMenuControl mainMenu;
+        private LevelSelectControl levelSelect;
+
         public GameWindow()
         {
             // This method is required for the designer support.
             // It initializes all components placed on the form (defined in GameWindow.Designer.cs).
             InitializeComponent();
+            DoubleBuffered = true; // removes flickering from the screen
+            
+            // initialization of user controls
+            mainMenu = new MainMenuControl();
+            levelSelect = new LevelSelectControl();
+
+            // configuration and adding controls to the panel
+            SetupControl(mainMenu);
+            SetupControl(levelSelect);
+
+            // exception handling by user controls
+            mainMenu.SelectLevelClicked += HandleSelectLevelClicked;
+            levelSelect.LevelSelected += HandleLevelSelected;
+            levelSelect.BackClicked += HandleBackClicked;
+
+            mainMenu.Visible = true; // at first this user control must be visible
         }
 
-        
-        /// Handles the Click event for the 'Select Level' picture button.
-        
-        private void picSelectLevel_Click(object sender, EventArgs e)
+        // helper function for user control switching
+        private void SetupControl(UserControl control)
         {
-            // Placeholder: This is where we will navigate to the level selection screen.
-            // to the GameWindow.LevelSelect.cs partial class file.
-            ShowLevelSelectionView();
+            control.Dock = DockStyle.Fill;
+            control.Visible = false; // Domyœlnie ukryte
+            pnlContainer.Controls.Add(control);
         }
 
-        
-        /// Handles the Click event for the 'Exit Game' picture button.
-        
-        private void picExitGame_Click(object sender, EventArgs e)
+        // function for switching between User Controls
+        private void SwitchUserControl(UserControl presentControl, UserControl newControl)
         {
-            // Safely exits the application.
-            Application.Exit();
+            presentControl.Visible = false;
+            newControl.Visible = true;
         }
 
-        
-        /// Optional: Actions to perform when the form loads.
-        
+        // --- Event Handlers for UserControl events ---
+
+        /// Handler for the event raised by MainMenuControl when 'Select Level' is clicked.
+
+        private void HandleSelectLevelClicked(object sender, EventArgs e)
+        {
+            SwitchUserControl(mainMenu, levelSelect);
+        }
+
+        /// Handler for the event raised by LevelSelectControl when 'Back' is clicked.
+        private void HandleBackClicked(object sender, EventArgs e)
+        {
+            // Call the existing method to switch back to the main menu view.
+            SwitchUserControl(levelSelect, mainMenu);
+        }
+
+        /// Handler for the event raised by LevelSelectControl when a level is chosen.
+
+        private void HandleLevelSelected(object sender, LevelSelectControl.LevelSelectedEventArgs e)
+        {
+            // Placeholder: This is where the game starts.
+            MessageBox.Show($"Startowanie Poziomu {e.LevelId}!");
+            // After starting the level, you might want to hide GameWindow or transition to the actual gameplay screen.
+        }
+
+        // Function for loading stuff for the GameWindow
         private void GameWindow_Load(object sender, EventArgs e)
         {
-            // You can add any initialization code here that needs to run
-            // after the components are loaded.
-            // For example, loading high scores, user settings, etc.
-            // This is the best place to load images from files.
-            LoadGraphics();
+            LoadBackground();
         }
 
-        
-        /// Loads all graphical assets from the 'graphics' folder.
-        
-        private void LoadGraphics()
+        // function for loading background from the local directory ./graphics/
+        private void LoadBackground()
         {
-            // Get the directory where the .exe file is running
             string basePath = Application.StartupPath;
             string graphicsPath = Path.Combine(basePath, "graphics");
 
             try
             {
-                // Load the image for the Select Level button
-                string selectLevelPath = Path.Combine(graphicsPath, "wybierz-poziom.png");
-                picSelectLevel.Image = Image.FromFile(selectLevelPath);
-
-                // Load the image for the logo
-                string logoPath = Path.Combine(graphicsPath, "bezpieczna-paczka-logo-nobg.png");
-                picLogo.Image = Image.FromFile(logoPath);
-
-                // Load the image for the Exit Button
-                string exitPath = Path.Combine(graphicsPath, "wyjdz-z-gry.png");
-                picExitGame.Image = Image.FromFile(exitPath);
-
-                // Load the images for the Level Selection buttons
-                string level1Path = Path.Combine(graphicsPath, "poziom1.png"); 
-                picLevel1.Image = Image.FromFile(level1Path);
-
-                string level2Path = Path.Combine(graphicsPath, "poziom2.png"); 
-                picLevel2.Image = Image.FromFile(level2Path);
-
-                string level3Path = Path.Combine(graphicsPath, "poziom3.png"); 
-                picLevel3.Image = Image.FromFile(level3Path);
-
-                // string backgroundPath = Path.Combine(graphicsPath, "tlo-startowe.png");
-                // this.BackgroundImage = Image.FromFile(backgroundPath);
+                string backgroundPath = Path.Combine(graphicsPath, "tlo-startowe.png");
+                BackgroundImage = Image.FromFile(backgroundPath);
+                BackgroundImageLayout = ImageLayout.Stretch; // Dostosowanie do rozmiaru okna
             }
             catch (FileNotFoundException ex)
             {
-                // If a file is missing, show a helpful error message instead of crashing.
-                MessageBox.Show($"B³¹d wczytywania grafiki: Nie znaleziono pliku!\n{ex.Message}", "B³¹d Pliku");
-                Application.Exit(); // Exit if graphics are missing
-            }
-            catch (Exception ex)
-            {
-                // Catch other potential errors (e.g., file is not an image)
-                MessageBox.Show($"Wyst¹pi³ nieoczekiwany b³¹d przy wczytywaniu grafiki:\n{ex.Message}", "B³¹d Krytyczny");
-                Application.Exit();
+                MessageBox.Show($"B³¹d wczytywania t³a: Nie znaleziono pliku!\\n{ex.Message}", "B³¹d Pliku");
             }
         }
     }
