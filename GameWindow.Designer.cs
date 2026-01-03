@@ -2,7 +2,7 @@
 {
     // This 'partial' class definition splits the GameWindow class across two files.
     // This file is for the designer-generated code.
-    partial class GameWindow
+    partial class GameWindow : Form
     {
         /// <summary> 
         /// Required designer variable.

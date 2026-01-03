@@ -3,11 +3,11 @@ using System.Windows.Forms;
 
 namespace bezpieczna_paczkaApp
 {
-    
+
     /// The main welcome screen for the 'Bezpieczna Paczka' game
     /// It displays the logo and navigation buttons.
-    
-    public partial class GameWindow : Form
+
+    public partial class GameWindow
     {
 
         /// Constructor for the Welcome Form.
@@ -20,7 +20,7 @@ namespace bezpieczna_paczkaApp
             // It initializes all components placed on the form (defined in GameWindow.Designer.cs).
             InitializeComponent();
             DoubleBuffered = true; // removes flickering from the screen
-            
+
             // initialization of user controls
             mainMenu = new MainMenuControl();
             levelSelect = new LevelSelectControl();
@@ -36,12 +36,24 @@ namespace bezpieczna_paczkaApp
 
             mainMenu.Visible = true; // at first this user control must be visible
         }
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                // Flag 0x02000000 is WS_EX_COMPOSITED
+                // Window and child-controls (UserControls) will be drawn
+                // in one cycle, which eliminates flickering.
+                cp.ExStyle |= 0x02000000;
+                return cp;
+            }
+        }
 
         // helper function for user control switching
         private void SetupControl(UserControl control)
         {
             control.Dock = DockStyle.Fill;
-            control.Visible = false; // Domyœlnie ukryte
+            control.Visible = false; // hidden by default
             pnlContainer.Controls.Add(control);
         }
 
@@ -58,14 +70,14 @@ namespace bezpieczna_paczkaApp
 
         private void HandleSelectLevelClicked(object sender, EventArgs e)
         {
-            SwitchUserControl(mainMenu, levelSelect);
+            SwitchUserControl(mainMenu, levelSelect); // switch controls
         }
 
         /// Handler for the event raised by LevelSelectControl when 'Back' is clicked.
         private void HandleBackClicked(object sender, EventArgs e)
         {
             // Call the existing method to switch back to the main menu view.
-            SwitchUserControl(levelSelect, mainMenu);
+            SwitchUserControl(levelSelect, mainMenu); // switch controls
         }
 
         /// Handler for the event raised by LevelSelectControl when a level is chosen.
@@ -93,7 +105,7 @@ namespace bezpieczna_paczkaApp
             {
                 string backgroundPath = Path.Combine(graphicsPath, "tlo-startowe.png");
                 BackgroundImage = Image.FromFile(backgroundPath);
-                BackgroundImageLayout = ImageLayout.Stretch; // Dostosowanie do rozmiaru okna
+                BackgroundImageLayout = ImageLayout.Stretch; // Size to fit
             }
             catch (FileNotFoundException ex)
             {
