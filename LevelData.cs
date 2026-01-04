@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace bezpieczna_paczkaApp
+{
+    /// Contains all data for a specific game level, including introduction and a set of questions.
+    public class LevelData
+    {
+        // The title of the level 
+        public string LevelTitle { get; set; }
+
+        // The introductory text explaining the plot and rules for this specific part of the story
+        public string IntroText { get; set; }
+
+        // A collection of all questions/scenarios assigned to this level
+        public List<Question> Questions { get; set; }
+
+        // Required score to pass the level (at least one star)
+        // Expressed as a percentage, where 1.0 is 100%
+        public double PassingThreshold = 0.90;
+
+        /// Constructor for the LevelData class.
+        public LevelData(string title, string intro)
+        {
+            LevelTitle = title; // title of the level
+            IntroText = intro; // introduction to the level
+            Questions = new List<Question>();
+        }
+    }
+}
