@@ -1,6 +1,6 @@
 ﻿namespace bezpieczna_paczkaApp
 {
-    partial class MainMenuControl
+    partial class MainMenuControl : UserControl
     {
         /// <summary> 
         /// Required designer variable.
@@ -31,9 +31,11 @@
             picLogo = new PictureBox();
             picSelectLevel = new PictureBox();
             picExitGame = new PictureBox();
+            picUni = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)picLogo).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picSelectLevel).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picExitGame).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)picUni).BeginInit();
             SuspendLayout();
             // 
             // picLogo
@@ -73,11 +75,21 @@
             picExitGame.TabStop = false;
             picExitGame.Click += picExitGame_Click;
             // 
+            // picUni
+            // 
+            picUni.Location = new Point(560, 850);
+            picUni.Name = "picUni";
+            picUni.Size = new Size(170, 150);
+            picUni.SizeMode = PictureBoxSizeMode.Zoom;
+            picUni.TabIndex = 9;
+            picUni.TabStop = false;
+            // 
             // MainMenuControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Transparent;
+            Controls.Add(picUni);
             Controls.Add(picExitGame);
             Controls.Add(picSelectLevel);
             Controls.Add(picLogo);
@@ -88,6 +100,7 @@
             ((System.ComponentModel.ISupportInitialize)picLogo).EndInit();
             ((System.ComponentModel.ISupportInitialize)picSelectLevel).EndInit();
             ((System.ComponentModel.ISupportInitialize)picExitGame).EndInit();
+            ((System.ComponentModel.ISupportInitialize)picUni).EndInit();
             ResumeLayout(false);
         }
 
@@ -95,6 +108,7 @@
         private PictureBox picLogo;
         private PictureBox picSelectLevel;
         private PictureBox picExitGame;
+        private PictureBox picUni;
     }
 
 }

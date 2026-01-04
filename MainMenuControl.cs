@@ -60,6 +60,10 @@ namespace bezpieczna_paczkaApp
                 // Load the image for the Exit Button
                 string exitPath = Path.Combine(graphicsPath, "wyjdz-z-gry.png");
                 picExitGame.Image = Image.FromFile(exitPath);
+
+                // Load image for the university logo
+                string uniPath = Path.Combine(graphicsPath, "pg_logo_czarne.png");
+                picUni.Image = Image.FromFile(uniPath);
             }
             catch (FileNotFoundException ex)
             {
