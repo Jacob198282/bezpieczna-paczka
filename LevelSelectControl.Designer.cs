@@ -1,6 +1,6 @@
 ﻿namespace bezpieczna_paczkaApp
 {
-    partial class LevelSelectControl
+    partial class LevelSelectControl : UserControl
     {
         /// <summary> 
         /// Required designer variable.
@@ -32,10 +32,12 @@
             picLevel2 = new PictureBox();
             picLevel3 = new PictureBox();
             picBack = new PictureBox();
+            picUni = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)picLevel1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picLevel2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picLevel3).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picBack).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)picUni).BeginInit();
             SuspendLayout();
             // 
             // picLevel1
@@ -86,11 +88,21 @@
             picBack.TabStop = false;
             picBack.Click += picBack_Click;
             // 
+            // picUni
+            // 
+            picUni.Location = new Point(560, 850);
+            picUni.Name = "picUni";
+            picUni.Size = new Size(170, 150);
+            picUni.SizeMode = PictureBoxSizeMode.Zoom;
+            picUni.TabIndex = 10;
+            picUni.TabStop = false;
+            // 
             // LevelSelectControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Transparent;
+            Controls.Add(picUni);
             Controls.Add(picBack);
             Controls.Add(picLevel1);
             Controls.Add(picLevel2);
@@ -103,6 +115,7 @@
             ((System.ComponentModel.ISupportInitialize)picLevel2).EndInit();
             ((System.ComponentModel.ISupportInitialize)picLevel3).EndInit();
             ((System.ComponentModel.ISupportInitialize)picBack).EndInit();
+            ((System.ComponentModel.ISupportInitialize)picUni).EndInit();
             ResumeLayout(false);
         }
 
@@ -111,5 +124,6 @@
         private PictureBox picLevel2; // Picture box for Level 2 selection button.
         private PictureBox picLevel3; // Picture box for Level 3 selection button.
         private PictureBox picBack;
+        private PictureBox picUni;
     }
 }

@@ -39,8 +39,6 @@ namespace bezpieczna_paczkaApp
             LevelSelected?.Invoke(this, new LevelSelectedEventArgs { LevelId = 3 });
         }
 
-        // **POLECAM:** Dodanie przycisku "Wróć" i zdarzenia do niego, np. BackClicked.
-
         private void LevelSelectControl_Load(object sender, EventArgs e)
         {
             // You can add any initialization code here that needs to run
@@ -80,6 +78,10 @@ namespace bezpieczna_paczkaApp
                 // Load the image for the Back Button
                 string backPath = Path.Combine(graphicsPath, "powrot.png");
                 picBack.Image = Image.FromFile(backPath);
+
+                // Load image for the university logo
+                string uniPath = Path.Combine(graphicsPath, "pg_logo_czarne.png");
+                picUni.Image = Image.FromFile(uniPath);
             }
             catch (FileNotFoundException ex)
             {
