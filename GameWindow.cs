@@ -84,9 +84,17 @@ namespace bezpieczna_paczkaApp
 
         private void HandleLevelSelected(object sender, LevelSelectControl.LevelSelectedEventArgs e)
         {
-            // Placeholder: This is where the game starts.
-            MessageBox.Show($"Startowanie Poziomu {e.LevelId}!");
-            // After starting the level, you might want to hide GameWindow or transition to the actual gameplay screen.
+            // Get the pre-loaded level data from the provider
+            LevelData data = LevelProvider.GetLevel(e.LevelId);
+
+            // Create the gameplay control with this data
+            LevelGameplayControl gameplay = new LevelGameplayControl(data);
+
+            // Setup controls that will be visible during the game
+            SetupControl(gameplay);
+
+            // Switch the view
+            SwitchUserControl(levelSelect, gameplay);
         }
 
         // Function for loading stuff for the GameWindow
