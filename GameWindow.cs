@@ -13,28 +13,35 @@ namespace bezpieczna_paczkaApp
         /// Constructor for the Welcome Form.
         private MainMenuControl mainMenu;
         private LevelSelectControl levelSelect;
+        private GameMenuControl gameMenu;
 
         public GameWindow()
         {
             // This method is required for the designer support.
             // It initializes all components placed on the form (defined in GameWindow.Designer.cs).
             InitializeComponent();
-            DoubleBuffered = true; // removes flickering from the screen
+            DoubleBuffered = true; // Removes flickering from the screen
 
-            // initialization of user controls
+            // Initialization of user controls
             mainMenu = new MainMenuControl();
             levelSelect = new LevelSelectControl();
+            gameMenu = new GameMenuControl();
 
-            // configuration and adding controls to the panel
+            // Configuration and adding controls to the panel
             SetupControl(mainMenu);
             SetupControl(levelSelect);
+            SetupControl(gameMenu);
 
-            // exception handling by user controls
+            // Exception handling by user controls
             mainMenu.SelectLevelClicked += HandleSelectLevelClicked;
             levelSelect.LevelSelected += HandleLevelSelected;
             levelSelect.BackClicked += HandleBackClicked;
+            gameMenu.ExitToLevelSelectClicked += HandleExitToLevelSelect;
+            gameMenu.ResumeClicked += HandleResumeClicked;
 
-            mainMenu.Visible = true; // at first this user control must be visible
+            mainMenu.Visible = true; // At first this user control must be visible
+            levelSelect.Visible = false;
+            gameMenu.Visible = false;
         }
         protected override CreateParams CreateParams
         {
@@ -90,6 +97,8 @@ namespace bezpieczna_paczkaApp
             // Create the gameplay control with this data
             LevelGameplayControl gameplay = new LevelGameplayControl(data);
 
+            gameplay.MenuRequested += HandleMenuClicked;
+
             // Setup controls that will be visible during the game
             SetupControl(gameplay);
 
@@ -97,10 +106,40 @@ namespace bezpieczna_paczkaApp
             SwitchUserControl(levelSelect, gameplay);
         }
 
+        /// <summary>
+        /// Handler for menu button being clicked during gameplay
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HandleMenuClicked(object sender, EventArgs e)
+        {
+            gameMenu.BringToFront();
+            gameMenu.Visible = true;
+        }
+
+        /// Handler for exiting the game and entering select level menu
+        private void HandleExitToLevelSelect(object sender, EventArgs e)
+        {
+            gameMenu.Visible = false;
+            // Find the current gameplay control in the container and switch from it
+            //UserControl currentGameplay = pnlContainer.Controls.OfType<LevelGameplayControl>().FirstOrDefault();
+            if (gameMenu != null)
+            {
+                SwitchUserControl(gameMenu, levelSelect);
+            }
+        }
+
+        /// Handler for back button in the in-game menu
+        private void HandleResumeClicked(object sender, EventArgs e)
+        {
+            gameMenu.Visible = false;
+        }
+
         // Function for loading stuff for the GameWindow
         private void GameWindow_Load(object sender, EventArgs e)
         {
             LoadBackground();
+            gameMenu.BackColor = Color.FromArgb(100,0,0,0); // setting transparency mode for the in game menu
         }
 
         // function for loading background from the local directory ./graphics/
