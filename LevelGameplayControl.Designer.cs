@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            lblLevelTitle = new Label();
             lblQuestionText = new Label();
             lblProgress = new Label();
             lblScore = new Label();
@@ -38,82 +37,80 @@
             picLogo = new PictureBox();
             picUni = new PictureBox();
             picVan = new PictureBox();
+            pnlIntro = new Panel();
+            pnlIntroStep2 = new Panel();
+            btnStartGameplay = new Button();
+            picSignsTutorial = new PictureBox();
+            pnlIntroStep1 = new Panel();
+            btnNext = new Button();
+            lblIntroDescription = new Label();
+            lblIntroTitle = new Label();
             ((System.ComponentModel.ISupportInitialize)picScenario).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picMenu).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picLogo).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picUni).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picVan).BeginInit();
+            pnlIntro.SuspendLayout();
+            pnlIntroStep2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)picSignsTutorial).BeginInit();
+            pnlIntroStep1.SuspendLayout();
             SuspendLayout();
-            // 
-            // lblLevelTitle
-            // 
-            lblLevelTitle.AutoSize = true;
-            lblLevelTitle.BackColor = Color.Transparent;
-            lblLevelTitle.Font = new Font("Gill Sans Ultra Bold Condensed", 36F, FontStyle.Italic, GraphicsUnit.Point, 0);
-            lblLevelTitle.ForeColor = SystemColors.ControlLight;
-            lblLevelTitle.Location = new Point(589, 21);
-            lblLevelTitle.Name = "lblLevelTitle";
-            lblLevelTitle.Size = new Size(134, 67);
-            lblLevelTitle.TabIndex = 0;
-            lblLevelTitle.Text = "Tytuł";
-            lblLevelTitle.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // lblQuestionText
             // 
-            lblQuestionText.AutoSize = true;
-            lblQuestionText.BackColor = Color.Transparent;
-            lblQuestionText.Font = new Font("Gill Sans Ultra Bold Condensed", 36F, FontStyle.Italic, GraphicsUnit.Point, 238);
+            lblQuestionText.BackColor = Color.Green;
+            lblQuestionText.Font = new Font("Gill Sans Ultra Bold", 20.25F, FontStyle.Italic, GraphicsUnit.Point, 238);
             lblQuestionText.ForeColor = SystemColors.ControlLight;
-            lblQuestionText.Location = new Point(570, 155);
+            lblQuestionText.Location = new Point(173, 21);
             lblQuestionText.Name = "lblQuestionText";
-            lblQuestionText.Size = new Size(184, 67);
+            lblQuestionText.Size = new Size(909, 122);
             lblQuestionText.TabIndex = 1;
             lblQuestionText.Text = "Pytanie";
             lblQuestionText.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // lblProgress
             // 
-            lblProgress.AutoSize = true;
-            lblProgress.BackColor = Color.Transparent;
-            lblProgress.Font = new Font("Gill Sans Ultra Bold Condensed", 36F, FontStyle.Italic, GraphicsUnit.Point, 238);
+            lblProgress.BackColor = Color.Green;
+            lblProgress.Font = new Font("Gill Sans Ultra Bold", 21.75F, FontStyle.Italic, GraphicsUnit.Point, 238);
             lblProgress.ForeColor = SystemColors.ControlLight;
             lblProgress.Location = new Point(20, 623);
             lblProgress.Name = "lblProgress";
-            lblProgress.Size = new Size(166, 67);
+            lblProgress.Size = new Size(200, 130);
             lblProgress.TabIndex = 2;
-            lblProgress.Text = "Postęp";
-            lblProgress.TextAlign = ContentAlignment.MiddleCenter;
+            lblProgress.Text = "Paczka \r\n20/20";
+            lblProgress.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // lblScore
             // 
-            lblScore.AutoSize = true;
-            lblScore.BackColor = Color.Transparent;
-            lblScore.Font = new Font("Gill Sans Ultra Bold Condensed", 36F, FontStyle.Italic, GraphicsUnit.Point, 238);
+            lblScore.BackColor = Color.Green;
+            lblScore.Font = new Font("Gill Sans Ultra Bold", 21.75F, FontStyle.Italic, GraphicsUnit.Point, 238);
             lblScore.ForeColor = SystemColors.ControlLight;
-            lblScore.Location = new Point(1031, 623);
+            lblScore.Location = new Point(1010, 623);
             lblScore.Name = "lblScore";
-            lblScore.Size = new Size(158, 67);
+            lblScore.Size = new Size(250, 130);
             lblScore.TabIndex = 3;
-            lblScore.Text = "Wynik";
-            lblScore.TextAlign = ContentAlignment.MiddleCenter;
+            lblScore.Text = "Dostarczono\r\n20/20";
+            lblScore.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // picScenario
             // 
             picScenario.BackColor = Color.Transparent;
-            picScenario.Location = new Point(295, 378);
+            picScenario.Location = new Point(230, 300);
             picScenario.Name = "picScenario";
-            picScenario.Size = new Size(709, 574);
+            picScenario.Size = new Size(770, 700);
             picScenario.SizeMode = PictureBoxSizeMode.Zoom;
             picScenario.TabIndex = 4;
             picScenario.TabStop = false;
             // 
             // pnlAnswers
             // 
+            pnlAnswers.AutoScroll = true;
             pnlAnswers.BackColor = Color.Transparent;
-            pnlAnswers.Location = new Point(295, 225);
+            pnlAnswers.Location = new Point(40, 150);
             pnlAnswers.Name = "pnlAnswers";
-            pnlAnswers.Size = new Size(709, 117);
+            pnlAnswers.Size = new Size(1200, 150);
             pnlAnswers.TabIndex = 5;
+            pnlAnswers.WrapContents = false;
             // 
             // picMenu
             // 
@@ -125,6 +122,7 @@
             picMenu.SizeMode = PictureBoxSizeMode.Zoom;
             picMenu.TabIndex = 6;
             picMenu.TabStop = false;
+            picMenu.Click += picMenu_Click;
             // 
             // picLogo
             // 
@@ -147,25 +145,113 @@
             // 
             // picVan
             // 
-            picVan.Location = new Point(554, 733);
+            picVan.Location = new Point(515, 733);
             picVan.Name = "picVan";
             picVan.Size = new Size(200, 200);
             picVan.SizeMode = PictureBoxSizeMode.Zoom;
             picVan.TabIndex = 9;
             picVan.TabStop = false;
             // 
+            // pnlIntro
+            // 
+            pnlIntro.Controls.Add(pnlIntroStep2);
+            pnlIntro.Controls.Add(pnlIntroStep1);
+            pnlIntro.Dock = DockStyle.Fill;
+            pnlIntro.Location = new Point(0, 0);
+            pnlIntro.Name = "pnlIntro";
+            pnlIntro.Size = new Size(1280, 1024);
+            pnlIntro.TabIndex = 10;
+            // 
+            // pnlIntroStep2
+            // 
+            pnlIntroStep2.BackColor = Color.Green;
+            pnlIntroStep2.Controls.Add(btnStartGameplay);
+            pnlIntroStep2.Controls.Add(picSignsTutorial);
+            pnlIntroStep2.Dock = DockStyle.Fill;
+            pnlIntroStep2.Location = new Point(0, 0);
+            pnlIntroStep2.Name = "pnlIntroStep2";
+            pnlIntroStep2.Size = new Size(1280, 1024);
+            pnlIntroStep2.TabIndex = 3;
+            pnlIntroStep2.Visible = false;
+            // 
+            // btnStartGameplay
+            // 
+            btnStartGameplay.Cursor = Cursors.Hand;
+            btnStartGameplay.Font = new Font("Gill Sans Ultra Bold Condensed", 20.25F, FontStyle.Italic, GraphicsUnit.Point, 238);
+            btnStartGameplay.Location = new Point(540, 902);
+            btnStartGameplay.Name = "btnStartGameplay";
+            btnStartGameplay.Size = new Size(200, 100);
+            btnStartGameplay.TabIndex = 1;
+            btnStartGameplay.Text = "Rozpocznij grę";
+            btnStartGameplay.UseVisualStyleBackColor = true;
+            btnStartGameplay.Click += btnStartGameplay_Click;
+            // 
+            // picSignsTutorial
+            // 
+            picSignsTutorial.Location = new Point(42, 32);
+            picSignsTutorial.Name = "picSignsTutorial";
+            picSignsTutorial.Size = new Size(1205, 864);
+            picSignsTutorial.SizeMode = PictureBoxSizeMode.Zoom;
+            picSignsTutorial.TabIndex = 0;
+            picSignsTutorial.TabStop = false;
+            // 
+            // pnlIntroStep1
+            // 
+            pnlIntroStep1.BackColor = Color.Green;
+            pnlIntroStep1.Controls.Add(btnNext);
+            pnlIntroStep1.Controls.Add(lblIntroDescription);
+            pnlIntroStep1.Controls.Add(lblIntroTitle);
+            pnlIntroStep1.Dock = DockStyle.Fill;
+            pnlIntroStep1.Location = new Point(0, 0);
+            pnlIntroStep1.Name = "pnlIntroStep1";
+            pnlIntroStep1.Size = new Size(1280, 1024);
+            pnlIntroStep1.TabIndex = 0;
+            // 
+            // btnNext
+            // 
+            btnNext.Cursor = Cursors.Hand;
+            btnNext.Font = new Font("Gill Sans Ultra Bold Condensed", 20.25F, FontStyle.Italic, GraphicsUnit.Point, 238);
+            btnNext.Location = new Point(540, 902);
+            btnNext.Name = "btnNext";
+            btnNext.Size = new Size(200, 100);
+            btnNext.TabIndex = 2;
+            btnNext.Text = "Dalej";
+            btnNext.UseVisualStyleBackColor = true;
+            btnNext.Click += btnNext_Click;
+            // 
+            // lblIntroDescription
+            // 
+            lblIntroDescription.Font = new Font("Gill Sans Ultra Bold Condensed", 20.25F, FontStyle.Italic, GraphicsUnit.Point, 238);
+            lblIntroDescription.ForeColor = SystemColors.ControlLight;
+            lblIntroDescription.Location = new Point(42, 100);
+            lblIntroDescription.Name = "lblIntroDescription";
+            lblIntroDescription.Size = new Size(1196, 775);
+            lblIntroDescription.TabIndex = 1;
+            lblIntroDescription.Text = "Zasady gry i wstęp";
+            // 
+            // lblIntroTitle
+            // 
+            lblIntroTitle.Font = new Font("Gill Sans Ultra Bold Condensed", 27.75F, FontStyle.Italic, GraphicsUnit.Point, 238);
+            lblIntroTitle.ForeColor = SystemColors.ControlLight;
+            lblIntroTitle.Location = new Point(42, 21);
+            lblIntroTitle.Name = "lblIntroTitle";
+            lblIntroTitle.Size = new Size(1196, 49);
+            lblIntroTitle.TabIndex = 0;
+            lblIntroTitle.Text = "Tytuł";
+            lblIntroTitle.TextAlign = ContentAlignment.MiddleCenter;
+            // 
             // LevelGameplayControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Transparent;
+            Controls.Add(pnlIntro);
             Controls.Add(picVan);
             Controls.Add(picUni);
             Controls.Add(picLogo);
             Controls.Add(picMenu);
             Controls.Add(pnlAnswers);
             Controls.Add(lblProgress);
-            Controls.Add(lblLevelTitle);
             Controls.Add(lblQuestionText);
             Controls.Add(lblScore);
             Controls.Add(picScenario);
@@ -176,13 +262,14 @@
             ((System.ComponentModel.ISupportInitialize)picLogo).EndInit();
             ((System.ComponentModel.ISupportInitialize)picUni).EndInit();
             ((System.ComponentModel.ISupportInitialize)picVan).EndInit();
+            pnlIntro.ResumeLayout(false);
+            pnlIntroStep2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)picSignsTutorial).EndInit();
+            pnlIntroStep1.ResumeLayout(false);
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
-
-        private Label lblLevelTitle;
         private Label lblQuestionText;
         private Label lblProgress;
         private Label lblScore;
@@ -192,5 +279,13 @@
         private PictureBox picLogo;
         private PictureBox picUni;
         private PictureBox picVan;
+        private Panel pnlIntro;
+        private Panel pnlIntroStep1;
+        private Button btnNext;
+        private Label lblIntroDescription;
+        private Label lblIntroTitle;
+        private Panel pnlIntroStep2;
+        private Button btnStartGameplay;
+        private PictureBox picSignsTutorial;
     }
 }

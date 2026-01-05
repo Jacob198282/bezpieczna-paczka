@@ -22,9 +22,13 @@ namespace bezpieczna_paczkaApp
         // Expressed as a percentage, where 1.0 is 100%
         public double PassingThreshold = 0.90;
 
+        // identification of the current level
+        public int LevelID { get; set; }
+
         /// Constructor for the LevelData class.
-        public LevelData(string title, string intro)
+        public LevelData(int id, string title, string intro)
         {
+            LevelID = id;
             LevelTitle = title; // title of the level
             IntroText = intro; // introduction to the level
             Questions = new List<Question>();

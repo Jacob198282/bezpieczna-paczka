@@ -28,8 +28,14 @@ namespace bezpieczna_paczkaApp
         // Number of correctly answered questions in this level.
         private int _correctAnswersCount;
 
+        // Total number of question in this level.
+        private int totalQuestionsCount;
+
         // Maximum number of answer "buttons" (picture boxes) visible on the screen at once.
         private const int MaxAnswerButtons = 4; // Maximum number of answer options supported in the UI.
+
+        // Font for the answer buttons, buttons and labels
+        public Font buttonFont = new Font("Gill Sans Ultra Bold", 20.25F, FontStyle.Italic, GraphicsUnit.Point, 238);
 
         public LevelGameplayControl(LevelData levelData)
         {
@@ -51,10 +57,58 @@ namespace bezpieczna_paczkaApp
             _currentQuestionIndex = 0;
             _correctAnswersCount = 0;
 
-            // Set the level title label text.
-            lblLevelTitle.Text = _levelData.LevelTitle;
+            totalQuestionsCount = _levelData.Questions.Count; // setting total number of questions provided by LevelData
 
-            // Directly load the first question.
+            // Setup the intro
+            SetupIntro();
+        }
+
+        /// <summary>
+        /// Prepares the initial state of the intro overlay.
+        /// </summary>
+        private void SetupIntro()
+        {
+            // Step 1: Text Intro
+            lblIntroTitle.Text = _levelData.LevelTitle;
+            lblIntroDescription.Text = _levelData.IntroText;
+
+            // Ensure the first step is visible and second is hidden
+            pnlIntroStep1.Visible = true;
+            pnlIntroStep2.Visible = false;
+            pnlIntro.Visible = true;
+        }
+
+        /// <summary>
+        /// Handler for the 'Next' button in the first part of the intro.
+        /// </summary>
+        private void btnNext_Click(object sender, EventArgs e)
+        {
+            // 1. Hide the text panel
+            pnlIntroStep1.Visible = false;
+
+            // 2. Load the tutorial image based on the level ID
+            // We can use a naming convention like 'signs_level_1.png'
+            string graphicsPath = Path.Combine(Application.StartupPath, "graphics");
+            string tutorialImgName = $"znaki_poziom_{_levelData.LevelID}.png"; // Example dynamic name
+            string fullPath = Path.Combine(graphicsPath, tutorialImgName);
+
+            if (File.Exists(fullPath))
+            {
+                picSignsTutorial.Image = Image.FromFile(fullPath);
+            }
+
+            // 3. Show the tutorial panel
+            pnlIntroStep2.Visible = true;
+        }
+
+        /// <summary>
+        /// Handler for the final button that starts the actual game.
+        /// </summary>
+        private void btnStartGameplay_Click(object sender, EventArgs e)
+        {
+            // Hide the whole intro overlay
+            pnlIntro.Visible = false;
+            //_currentQuestionIndex = 0;
             LoadQuestion(_currentQuestionIndex);
         }
 
@@ -73,10 +127,8 @@ namespace bezpieczna_paczkaApp
             lblQuestionText.Text = currentQuestion.QuestionText;
 
             // Update progress label: "Pytanie X / N".
-            int QuestionNumberOffset = 1; // Offset to convert zero-based index to human-readable number.
-            int displayedQuestionNumber = questionIndex + QuestionNumberOffset;
-            int totalQuestionsCount = _levelData.Questions.Count;
-            lblProgress.Text = $"Pytanie {displayedQuestionNumber} / {totalQuestionsCount}";
+            int displayedQuestionNumber = questionIndex + 1; // Offset to convert zero-based index to human-readable number.
+            lblProgress.Text = $"Paczka\n{displayedQuestionNumber} / {totalQuestionsCount}";
 
             // Load scenario image.
             LoadScenarioImage(currentQuestion.ScenarioImagePath);
@@ -85,7 +137,7 @@ namespace bezpieczna_paczkaApp
             DisplayAnswerOptions(currentQuestion.Options);
 
             // Update score label.
-            lblScore.Text = $"Poprawne odpowiedzi: {_correctAnswersCount}";
+            lblScore.Text = $"Dostarczono {_correctAnswersCount}";
         }
 
         // Loads the scenario image from the given file path into the PictureBox.
@@ -128,8 +180,7 @@ namespace bezpieczna_paczkaApp
             // Clear any existing controls in the answers panel.
             pnlAnswers.Controls.Clear();
 
-            int optionsCount = options.Count;
-            int buttonsToCreate = optionsCount;
+            int buttonsToCreate = options.Count; // check how many answers are for this question
 
             // Limit the number of displayed options by the defined maximum.
             if (buttonsToCreate > MaxAnswerButtons)
@@ -137,83 +188,89 @@ namespace bezpieczna_paczkaApp
                 buttonsToCreate = MaxAnswerButtons;
             }
 
-            for (int optionIndex = 0; optionIndex < buttonsToCreate; optionIndex++)
+            foreach (AnswerOption option in options)
             {
-                AnswerOption option = options[optionIndex];
+                // Create a new Button instance
+                Button btn = new Button();
 
-                PictureBox answerPicture = new PictureBox();
+                // --- Visual Settings ---
+                btn.Text = option.AnswerText;
+                btn.Width = 300; // Fixed width, so that up to four buttons could fit in one pnlAnswers panel
+                btn.Height = 140; // Fixed height for better touch/click target
+                btn.Font = buttonFont; // Using publicly created font instead of creating each time new font
+                btn.BackColor = Color.WhiteSmoke;
+                btn.FlatStyle = FlatStyle.Flat;
+                btn.Cursor = Cursors.Hand;
+                btn.Margin = new Padding(0, 5, 0, 5); // Add spacing between buttons
 
-                // Store the AnswerOption instance in the Tag property for later retrieval.
-                answerPicture.Tag = option;
+                // Storing the whole AnswerOption object in the Tag for the click event
+                btn.Tag = option;
 
-                // Configure visual and interaction properties of the answer picture.
-                answerPicture.BackColor = Color.Transparent;
-                answerPicture.Cursor = Cursors.Hand;
-                answerPicture.SizeMode = PictureBoxSizeMode.Zoom;
+                // --- Event Handling ---
+                btn.Click += HandleAnswerButtonClick;
 
-                // At this stage we do not have specific image files for each answer.
-                // TODO: Assign an image for this answer option based on AnswerOption data or index.
-
-                // Subscribe to the Click event once per picture box.
-                answerPicture.Click += HandleAnswerButtonClick;
-
-                // Let the layout of picture boxes be handled by the panel's layout (e.g., FlowLayoutPanel).
-                pnlAnswers.Controls.Add(answerPicture);
+                // Add the button to the FlowLayoutPanel
+                pnlAnswers.Controls.Add(btn);
             }
         }
 
         // Handles player's click on one of the answer picture boxes.
         private void HandleAnswerButtonClick(object sender, EventArgs e)
         {
-            PictureBox clickedPicture = sender as PictureBox;
+            Button clickedButton = (Button)sender; // Casting sender to a Button type to retrieve the attached AnswerOption
 
-            if (clickedPicture == null)
+            if (clickedButton == null)
             {
                 return;
             }
 
-            AnswerOption selectedOption = clickedPicture.Tag as AnswerOption;
+            AnswerOption selectedOption = (AnswerOption)clickedButton.Tag; // Retrieving attached AnswerOption
 
             if (selectedOption == null)
             {
                 return;
             }
 
-            // Evaluate the answer and update score.
+            string answerMessage; // String variable holding feedback message after answering the question
+
+            // Evaluate the answer and update score
             if (selectedOption.IsCorrect)
             {
-                int correctAnswerIncrement = 1; // Number of points for a single correct answer.
-                _correctAnswersCount += correctAnswerIncrement;
+                _correctAnswersCount++;
+                lblScore.Text = $"Dostarczono: {_correctAnswersCount}"; // Immediatelly update score label
+                answerMessage = "Poprawna odpowiedź!";
+            }
+            else
+            {
+                answerMessage = "Niepoprawna odpowiedź!";
             }
 
-            // Show feedback message for the chosen option.
-            MessageBox.Show(selectedOption.FeedbackMessage, "Informacja");
+                // Show feedback message for the chosen option.
+                MessageBox.Show(selectedOption.FeedbackMessage, answerMessage);
 
-            // Placeholder for running the van animation based on the chosen option.
+            // Placeholder for running the van animation based on the chosen option
             PlayAnswerAnimation(selectedOption);
 
-            // Proceed to the next question or finish the level.
+            // Proceed to the next question or finish the level
             GoToNextQuestionOrFinish();
         }
 
-        // Plays the animation of the van according to the selected answer.
-        // This is a placeholder method that will be implemented later.
+        // Plays the animation of the van according to the selected answer
+        // This is a placeholder method that will be implemented later
         private void PlayAnswerAnimation(AnswerOption selectedOption)
         {
-            // TODO: Implement animation logic using selectedOption.DestinationX, DestinationY and DestinationRotation.
-            // At this stage, we only keep the method stub to show the future responsibility.
+            // TODO: Implement animation logic using selectedOption.DestinationX, DestinationY and DestinationRotation
+            // At this stage, we only keep the method stub to show the future responsibility
         }
 
-        // Moves to the next question if available, otherwise completes the level.
+        // Moves to the next question if available, otherwise completes the level
         private void GoToNextQuestionOrFinish()
         {
-            int lastQuestionIndexOffset = 1; // Offset used to get the last index from the total count.
-            int lastQuestionIndex = _levelData.Questions.Count - lastQuestionIndexOffset;
+            int lastQuestionIndex = totalQuestionsCount - 1; // Offset used to get the last index from the total count
 
             if (_currentQuestionIndex < lastQuestionIndex)
             {
-                int nextQuestionIncrement = 1; // Step to move from current question to the next one.
-                _currentQuestionIndex += nextQuestionIncrement;
+                _currentQuestionIndex++; // Step to move from current question to the next one
                 LoadQuestion(_currentQuestionIndex);
             }
             else
@@ -222,10 +279,9 @@ namespace bezpieczna_paczkaApp
             }
         }
 
-        // Calculates final result, checks if the level is passed and raises the LevelCompleted event.
+        // Calculates final result, checks if the level is passed and raises the LevelCompleted event
         private void CompleteLevel()
         {
-            int totalQuestionsCount = _levelData.Questions.Count;
 
             if (totalQuestionsCount <= 0)
             {
@@ -247,13 +303,13 @@ namespace bezpieczna_paczkaApp
             LevelCompleted?.Invoke(this, eventArgs);
         }
 
-        // Handles click on the "Menu" picture button to request opening the in-level menu.
+        // Handles click on the "Menu" picture button to request opening the in-level menu
         private void picMenu_Click(object sender, EventArgs e)
         {
             MenuRequested?.Invoke(this, EventArgs.Empty);
         }
 
-        // Loads graphical assets required by the gameplay screen.
+        // Loads graphical assets required by the gameplay screen
         private void LoadGraphics()
         {
             string basePath = Application.StartupPath;
@@ -291,19 +347,19 @@ namespace bezpieczna_paczkaApp
         }
     }
 
-    // Contains summary data about the finished level.
+    // Contains summary data about the finished level
     public class LevelCompletedEventArgs : EventArgs
     {
-        // Number of questions answered correctly by the player.
+        // Number of questions answered correctly by the player
         public int CorrectAnswersCount { get; set; }
 
-        // Total number of questions in the level.
+        // Total number of questions in the level
         public int TotalQuestionsCount { get; set; }
 
-        // Ratio of correct answers to total questions (0.0 - 1.0).
+        // Ratio of correct answers to total questions (0.0 - 1.0)
         public double CorrectRatio { get; set; }
 
-        // Indicates whether the player has passed the level according to PassingThreshold.
+        // Indicates whether the player has passed the level according to PassingThreshold
         public bool IsPassed { get; set; }
     }
 }
