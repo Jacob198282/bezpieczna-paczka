@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * Copyright (c) Jacob198282 Gdansk University of Technology
+ * MIT License
+ * Documentation under https://github.com/Jacob198282/bezpieczna-paczka
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

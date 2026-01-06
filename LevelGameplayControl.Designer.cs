@@ -31,7 +31,6 @@
             lblQuestionText = new Label();
             lblProgress = new Label();
             lblScore = new Label();
-            picScenario = new PictureBox();
             pnlAnswers = new FlowLayoutPanel();
             picMenu = new PictureBox();
             picLogo = new PictureBox();
@@ -45,7 +44,7 @@
             btnNext = new Button();
             lblIntroDescription = new Label();
             lblIntroTitle = new Label();
-            ((System.ComponentModel.ISupportInitialize)picScenario).BeginInit();
+            pnlScenario = new Panel();
             ((System.ComponentModel.ISupportInitialize)picMenu).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picLogo).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picUni).BeginInit();
@@ -54,14 +53,15 @@
             pnlIntroStep2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picSignsTutorial).BeginInit();
             pnlIntroStep1.SuspendLayout();
+            pnlScenario.SuspendLayout();
             SuspendLayout();
             // 
             // lblQuestionText
             // 
-            lblQuestionText.BackColor = Color.Green;
+            lblQuestionText.BackColor = Color.Transparent;
             lblQuestionText.Font = new Font("Gill Sans Ultra Bold", 20.25F, FontStyle.Italic, GraphicsUnit.Point, 238);
             lblQuestionText.ForeColor = SystemColors.ControlLight;
-            lblQuestionText.Location = new Point(173, 21);
+            lblQuestionText.Location = new Point(173, 0);
             lblQuestionText.Name = "lblQuestionText";
             lblQuestionText.Size = new Size(909, 122);
             lblQuestionText.TabIndex = 1;
@@ -70,7 +70,7 @@
             // 
             // lblProgress
             // 
-            lblProgress.BackColor = Color.Green;
+            lblProgress.BackColor = Color.Transparent;
             lblProgress.Font = new Font("Gill Sans Ultra Bold", 21.75F, FontStyle.Italic, GraphicsUnit.Point, 238);
             lblProgress.ForeColor = SystemColors.ControlLight;
             lblProgress.Location = new Point(20, 623);
@@ -82,7 +82,7 @@
             // 
             // lblScore
             // 
-            lblScore.BackColor = Color.Green;
+            lblScore.BackColor = Color.Transparent;
             lblScore.Font = new Font("Gill Sans Ultra Bold", 21.75F, FontStyle.Italic, GraphicsUnit.Point, 238);
             lblScore.ForeColor = SystemColors.ControlLight;
             lblScore.Location = new Point(1010, 623);
@@ -92,21 +92,11 @@
             lblScore.Text = "Dostarczono\r\n20/20";
             lblScore.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // picScenario
-            // 
-            picScenario.BackColor = Color.Transparent;
-            picScenario.Location = new Point(230, 300);
-            picScenario.Name = "picScenario";
-            picScenario.Size = new Size(770, 700);
-            picScenario.SizeMode = PictureBoxSizeMode.Zoom;
-            picScenario.TabIndex = 4;
-            picScenario.TabStop = false;
-            // 
             // pnlAnswers
             // 
             pnlAnswers.AutoScroll = true;
             pnlAnswers.BackColor = Color.Transparent;
-            pnlAnswers.Location = new Point(40, 150);
+            pnlAnswers.Location = new Point(40, 130);
             pnlAnswers.Name = "pnlAnswers";
             pnlAnswers.Size = new Size(1200, 150);
             pnlAnswers.TabIndex = 5;
@@ -127,7 +117,7 @@
             // picLogo
             // 
             picLogo.BackColor = Color.Transparent;
-            picLogo.Location = new Point(42, 21);
+            picLogo.Location = new Point(0, 0);
             picLogo.Name = "picLogo";
             picLogo.Size = new Size(125, 125);
             picLogo.SizeMode = PictureBoxSizeMode.Zoom;
@@ -136,7 +126,8 @@
             // 
             // picUni
             // 
-            picUni.Location = new Point(1088, 21);
+            picUni.BackColor = Color.Transparent;
+            picUni.Location = new Point(1130, 0);
             picUni.Name = "picUni";
             picUni.Size = new Size(150, 125);
             picUni.SizeMode = PictureBoxSizeMode.Zoom;
@@ -145,9 +136,10 @@
             // 
             // picVan
             // 
-            picVan.Location = new Point(515, 733);
+            picVan.BackColor = Color.Transparent;
+            picVan.Location = new Point(227, 290);
             picVan.Name = "picVan";
-            picVan.Size = new Size(200, 200);
+            picVan.Size = new Size(45, 150);
             picVan.SizeMode = PictureBoxSizeMode.Zoom;
             picVan.TabIndex = 9;
             picVan.TabStop = false;
@@ -240,24 +232,31 @@
             lblIntroTitle.Text = "Tytuł";
             lblIntroTitle.TextAlign = ContentAlignment.MiddleCenter;
             // 
+            // pnlScenario
+            // 
+            pnlScenario.BackgroundImageLayout = ImageLayout.Zoom;
+            pnlScenario.Controls.Add(picVan);
+            pnlScenario.Location = new Point(260, 280);
+            pnlScenario.Name = "pnlScenario";
+            pnlScenario.Size = new Size(740, 740);
+            pnlScenario.TabIndex = 2;
+            // 
             // LevelGameplayControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.Transparent;
+            BackColor = Color.Green;
             Controls.Add(pnlIntro);
-            Controls.Add(picVan);
-            Controls.Add(picUni);
-            Controls.Add(picLogo);
-            Controls.Add(picMenu);
             Controls.Add(pnlAnswers);
+            Controls.Add(picLogo);
+            Controls.Add(picUni);
+            Controls.Add(picMenu);
             Controls.Add(lblProgress);
             Controls.Add(lblQuestionText);
             Controls.Add(lblScore);
-            Controls.Add(picScenario);
+            Controls.Add(pnlScenario);
             Name = "LevelGameplayControl";
             Size = new Size(1280, 1024);
-            ((System.ComponentModel.ISupportInitialize)picScenario).EndInit();
             ((System.ComponentModel.ISupportInitialize)picMenu).EndInit();
             ((System.ComponentModel.ISupportInitialize)picLogo).EndInit();
             ((System.ComponentModel.ISupportInitialize)picUni).EndInit();
@@ -266,6 +265,7 @@
             pnlIntroStep2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)picSignsTutorial).EndInit();
             pnlIntroStep1.ResumeLayout(false);
+            pnlScenario.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -273,7 +273,6 @@
         private Label lblQuestionText;
         private Label lblProgress;
         private Label lblScore;
-        private PictureBox picScenario;
         private FlowLayoutPanel pnlAnswers;
         private PictureBox picMenu;
         private PictureBox picLogo;
@@ -287,5 +286,6 @@
         private Panel pnlIntroStep2;
         private Button btnStartGameplay;
         private PictureBox picSignsTutorial;
+        private Panel pnlScenario;
     }
 }

@@ -1,13 +1,20 @@
-﻿using System;
+﻿/*
+ * Copyright (c) Jacob198282 Gdansk University of Technology
+ * MIT License
+ * Documentation under https://github.com/Jacob198282/bezpieczna-paczka
+ */
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
 
 namespace bezpieczna_paczkaApp
 {
@@ -37,12 +44,32 @@ namespace bezpieczna_paczkaApp
         // Font for the answer buttons, buttons and labels
         public Font buttonFont = new Font("Gill Sans Ultra Bold", 20.25F, FontStyle.Italic, GraphicsUnit.Point, 238);
 
-        public LevelGameplayControl(LevelData levelData)
+        public string projectRoot; // path to the project
+        public string graphicsPath; // path to folder with graphics
+        public string scenarioPath; // path to folder containing scenario pictures
+
+        //public System.Windows.Forms.Timer _animationTimer;
+        //public List<Waypoint> _currentPath; // Path for the current animation
+        //public int _currentWaypointIndex; // Which point are we moving towards
+        //public const int MovementSpeed = 8; // Speed in pixels per tick
+        //public AnswerOption _lastSelectedOption; // To show feedback after animation
+        //public float _lastRotation = 0f;
+
+        public LevelGameplayControl(LevelData levelData, string projectRoot, string graphicsPath)
         {
             if (levelData == null)
             {
                 throw new ArgumentNullException(nameof(levelData));
             }
+
+            this.projectRoot = projectRoot;
+            this.graphicsPath = graphicsPath;
+
+            scenarioPath = Path.Combine(graphicsPath, "scenario"); // Setting path to folder with scenario images
+
+            //_animationTimer = new System.Windows.Forms.Timer(); // Creating timer for animation
+            //_animationTimer.Interval = 16; // ~60 FPS
+            //_animationTimer.Tick += AnimationTimer_Tick;
 
             _levelData = levelData;
 
@@ -88,8 +115,8 @@ namespace bezpieczna_paczkaApp
 
             // Loading the tutorial image based on the level ID
             // Using naming convention 'znaki_poziom_{what level the player is playing}.png'
-            string projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..", "..")); // Go back three folders
-            string graphicsPath = Path.Combine(projectRoot, "res", "graphics");
+            //string projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..", "..")); // Go back three folders
+            //string graphicsPath = Path.Combine(projectRoot, "res", "graphics");
             string tutorialImgName = $"znaki_poziom_{_levelData.LevelID}.png"; // Dynamic name using parameter of _levelData
             string fullPath = Path.Combine(graphicsPath, tutorialImgName);
 
@@ -121,6 +148,8 @@ namespace bezpieczna_paczkaApp
                 throw new ArgumentOutOfRangeException(nameof(questionIndex));
             }
 
+            //_lastRotation = 0f;
+
             Question currentQuestion = _levelData.Questions[questionIndex];
 
             // Update question text label
@@ -144,10 +173,10 @@ namespace bezpieczna_paczkaApp
         private void LoadScenarioImage(string imagePath)
         {
             // Dispose previous image to free resources, if needed
-            if (picScenario.Image != null)
+            if (pnlScenario.BackgroundImage != null)
             {
-                picScenario.Image.Dispose();
-                picScenario.Image = null;
+                pnlScenario.BackgroundImage.Dispose();
+                pnlScenario.BackgroundImage = null;
             }
 
             if (string.IsNullOrWhiteSpace(imagePath))
@@ -158,7 +187,11 @@ namespace bezpieczna_paczkaApp
 
             try
             {
-                picScenario.Image = Image.FromFile(imagePath);
+                // Getting the name for the folder depending on what level is actually on
+                string folderName = $"level_{_levelData.LevelID}"; // Assuming that level ID is 1, 2 or 3
+                string scenarioLevelPath = Path.Combine(scenarioPath, folderName); // Setting path to folder containing scenarios for this level
+                imagePath = Path.Combine(scenarioLevelPath, imagePath); // Setting path to the image
+                pnlScenario.BackgroundImage = Image.FromFile(imagePath);
             }
             catch (FileNotFoundException ex)
             {
@@ -259,9 +292,102 @@ namespace bezpieczna_paczkaApp
         // This is a placeholder method that will be implemented later
         private void PlayAnswerAnimation(AnswerOption selectedOption)
         {
-            // TODO: Implement animation logic using selectedOption.DestinationX, DestinationY and DestinationRotation
-            // At this stage, we only keep the method stub to show the future responsibility
+            //_lastSelectedOption = selectedOption;
+            //_currentPath = selectedOption.Path;
+            //_currentWaypointIndex = 0;
+
+            //// Disable buttons so player can't click during animation
+            //pnlAnswers.Enabled = false;
+
+            //_animationTimer.Start();
+            return;
         }
+
+        //private void AnimationTimer_Tick(object sender, EventArgs e)
+        //{
+        //    if (_currentPath == null || _currentWaypointIndex >= _currentPath.Count)
+        //    {
+        //        _animationTimer.Stop();
+        //        // Feedback logic here
+        //        return;
+        //    }
+
+        //    Waypoint target = _currentPath[_currentWaypointIndex];
+        //    Point targetPos = target.Position;
+
+        //    int curX = picVan.Location.X;
+        //    int curY = picVan.Location.Y;
+
+        //    // 1. Handle Rotation
+        //    // We update the image if the rotation of the target waypoint is different
+        //    if (Math.Abs(_lastRotation - target.Rotation) > 0.1f)
+        //    {
+        //        // Load original van image first to avoid quality loss during multiple rotations
+        //        //string graphicsPath = Path.Combine(Application.StartupPath, "..", "res", "graphics");
+        //        Image originalVan = Image.FromFile(Path.Combine(graphicsPath, "pojazd1.png"));
+
+        //        picVan.Image = RotateImage(originalVan, target.Rotation);
+        //        _lastRotation = target.Rotation;
+        //    }
+
+        //    // 2. Handle Movement
+        //    int diffX = targetPos.X - curX;
+        //    int diffY = targetPos.Y - curY;
+
+        //    if (Math.Abs(diffX) <= MovementSpeed && Math.Abs(diffY) <= MovementSpeed)
+        //    {
+        //        picVan.Location = targetPos;
+        //        _currentWaypointIndex++;
+        //        return;
+        //    }
+
+        //    int stepX = diffX == 0 ? 0 : (diffX > 0 ? MovementSpeed : -MovementSpeed);
+        //    int stepY = diffY == 0 ? 0 : (diffY > 0 ? MovementSpeed : -MovementSpeed);
+
+        //    picVan.Location = new Point(curX + stepX, curY + stepY);
+        //}
+
+        //// Method from stack overflow, Tony The Lion
+        ///// <summary>
+        ///// Method to rotate an image either clockwise or counter-clockwise
+        ///// </summary>
+        ///// <param name="img">the image to be rotated</param>
+        ///// <param name="rotationAngle">the angle (in degrees).
+        ///// NOTE: 
+        ///// Positive values will rotate clockwise
+        ///// negative values will rotate counter-clockwise
+        ///// </param>
+        ///// <returns></returns>
+        //public static Image RotateImage(Image img, float rotationAngle)
+        //{
+        //    //create an empty Bitmap image
+        //    Bitmap bmp = new Bitmap(img.Width, img.Height);
+
+        //    //turn the Bitmap into a Graphics object
+        //    Graphics gfx = Graphics.FromImage(bmp);
+
+        //    //now we set the rotation point to the center of our image
+        //    gfx.TranslateTransform((float)bmp.Width / 2, (float)bmp.Height / 2);
+
+        //    //now rotate the image
+        //    gfx.RotateTransform(rotationAngle);
+
+        //    gfx.TranslateTransform(-(float)bmp.Width / 2, -(float)bmp.Height / 2);
+
+        //    //set the InterpolationMode to HighQualityBicubic so to ensure a high
+        //    //quality image once it is transformed to the specified size
+        //    gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
+        //    gfx.SmoothingMode = SmoothingMode.HighQuality; // added smoothing
+
+        //    //now draw our new image onto the graphics object
+        //    gfx.DrawImage(img, new Point(0, 0));
+
+        //    //dispose of our Graphics object
+        //    gfx.Dispose();
+
+        //    //return the image
+        //    return bmp;
+        //}
 
         // Moves to the next question if available, otherwise completes the level
         private void GoToNextQuestionOrFinish()
@@ -312,8 +438,8 @@ namespace bezpieczna_paczkaApp
         // Loads graphical assets required by the gameplay screen
         private void LoadGraphics()
         {
-            string projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..",".."));
-            string graphicsPath = Path.Combine(projectRoot, "res", "graphics");
+            //string projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..",".."));
+            //string graphicsPath = Path.Combine(projectRoot, "res", "graphics");
 
             try
             {

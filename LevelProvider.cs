@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * Copyright (c) Jacob198282 Gdansk University of Technology
+ * MIT License
+ * Documentation under https://github.com/Jacob198282/bezpieczna-paczka
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -56,7 +62,7 @@ namespace bezpieczna_paczkaApp
         /// </summary>
         private static LevelData InitializeLevel1()
         {
-            // Define basic intro and title
+            // Define basic intro and title for level 1
             string title = "Poziom 1: Pierwszy Dzień Dostawcy";
             string intro = "Witaj w pracy! Twoim zadaniem jest dostarczenie paczek zgodnie z przepisami.\n" +
                           "Pamiętaj, że bezpieczeństwo jest ważniejsze niż pośpiech.";
@@ -64,33 +70,38 @@ namespace bezpieczna_paczkaApp
             LevelData level1 = new LevelData(1, title, intro);
 
             // --- Question 1 Configuration ---
-            // Let's assume the van starts at the bottom of a T-junction
             Question q1 = new Question(
                 "Zbliżasz się do skrzyżowania równorzędnego. Z Twojej prawej nadjeżdża rowerzysta. Co robisz?",
-                "" // Background image filename
+                "1.png" // Background image filename
             );
 
-            // Correct Option: Yield priority
-            // Animation: Van stays at a safe distance or moves slightly then stops
             q1.AddOption(new AnswerOption(
                 "Ustępuję pierwszeństwa rowerzyście",
                 true,   // Is correct
-                600,    // Target X (Stay in lane)
-                500,    // Target Y (Stop before intersection)
-                0f,     // No rotation
+                new List<Waypoint>
+                { 
+                    new Waypoint(227,290,0f),
+                    new Waypoint(227,339,90f),
+                    new Waypoint(356,291,0f),
+                    new Waypoint(437,182,-90f),
+                    new Waypoint(438,85,0f),
+                    new Waypoint(384,44,-90f),
+                    new Waypoint(1,43,0f),
+                    new Waypoint(15,5,-90f),
+                    new Waypoint(15,238,0f),
+                    new Waypoint(167,290,-90f)
+                },
                 "Brawo! Na skrzyżowaniu równorzędnym obowiązuje zasada prawej ręki."
             ));
 
-            // Incorrect Option: Drive through
-            // Animation: Van drives to the middle of the intersection (potential crash scenario)
-            int crashX = 600;
-            int crashY = 300;
             q1.AddOption(new AnswerOption(
                 "Przejeżdżam pierwszy, jestem większy",
                 false,  // Is incorrect
-                crashX,
-                crashY,
-                0f,
+                new List<Waypoint>
+                {
+                    new Waypoint(227,290,0f),
+                    new Waypoint(227,339,-90f)
+                },
                 "Błąd! Rowerzysta miał pierwszeństwo. Mogło dojść do kolizji!"
             ));
 
