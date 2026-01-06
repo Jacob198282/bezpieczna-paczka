@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) Jacob198282 Gdansk University of Technology
+ * MIT License
+ * Documentation under https://github.com/Jacob198282/bezpieczna-paczka
+ */
+
 namespace bezpieczna_paczkaApp
 {
     internal static class Program
