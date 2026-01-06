@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * Copyright (c) Jacob198282 Gdansk University of Technology
+ * MIT License
+ * Documentation under https://github.com/Jacob198282/bezpieczna-paczka
+ */
+
+using System;
 using System.Windows.Forms;
 
 namespace bezpieczna_paczkaApp
@@ -9,11 +15,16 @@ namespace bezpieczna_paczkaApp
         // Public event to notify the host form (GameWindow) when the level selection button is clicked
         public event EventHandler SelectLevelClicked;
 
-        public MainMenuControl()
+        public string projectRoot; // path to the project
+        public string graphicsPath; // path to folder with graphics
+        public MainMenuControl(string projectRoot, string graphicsPath)
         {
             InitializeComponent();
             
             DoubleBuffered = true; // Removes flickering of the background
+
+            this.projectRoot = projectRoot;
+            this.graphicsPath = graphicsPath;
         }
 
         // Handles the Click event for the 'Select Level' button
@@ -41,8 +52,8 @@ namespace bezpieczna_paczkaApp
 
         private void LoadGraphics()
         {
-            string projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..","..")); // Go back three folders
-            string graphicsPath = Path.Combine(projectRoot, "res", "graphics");
+            //string projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..","..")); // Go back three folders
+            //string graphicsPath = Path.Combine(projectRoot, "res", "graphics");
 
             try
             {
