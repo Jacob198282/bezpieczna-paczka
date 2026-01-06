@@ -45,8 +45,8 @@ namespace bezpieczna_paczkaApp
 
         private void LoadGraphics()
         {
-            string basePath = Application.StartupPath;
-            string graphicsPath = Path.Combine(basePath, "graphics");
+            string projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..", "..")); // Go back three folders
+            string graphicsPath = Path.Combine(projectRoot, "res", "graphics");
 
             try
             {
