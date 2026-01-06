@@ -13,26 +13,26 @@ namespace bezpieczna_paczkaApp
 {
     public partial class LevelGameplayControl : UserControl
     {
-        // Event raised when the level is completed (all questions answered).
+        // Event raised when the level is completed (all questions answered)
         public event EventHandler<LevelCompletedEventArgs> LevelCompleted;
 
-        // Event raised when the player wants to open the in-level menu (pause/options).
+        // Event raised when the player wants to open the in-level menu (pause/options)
         public event EventHandler MenuRequested;
 
-        // Data for the current level (title, intro, questions).
+        // Data for the current level (title, intro, questions)
         private readonly LevelData _levelData;
 
-        // Index of the currently displayed question (zero-based).
+        // Index of the currently displayed question (zero-based)
         private int _currentQuestionIndex;
 
-        // Number of correctly answered questions in this level.
+        // Number of correctly answered questions in this level
         private int _correctAnswersCount;
 
-        // Total number of question in this level.
+        // Total number of question in this level
         private int totalQuestionsCount;
 
-        // Maximum number of answer "buttons" (picture boxes) visible on the screen at once.
-        private const int MaxAnswerButtons = 4; // Maximum number of answer options supported in the UI.
+        // Maximum number of answer "buttons" (picture boxes) visible on the screen at once
+        private const int MaxAnswerButtons = 4; // Maximum number of answer options supported in the UI
 
         // Font for the answer buttons, buttons and labels
         public Font buttonFont = new Font("Gill Sans Ultra Bold", 20.25F, FontStyle.Italic, GraphicsUnit.Point, 238);
@@ -46,12 +46,12 @@ namespace bezpieczna_paczkaApp
 
             _levelData = levelData;
 
-            InitializeComponent();     // Designer-created UI (labels, picture boxes, panels).
-            LoadGraphics();            // Load graphical assets such as the menu button image.
-            InitializeRuntimeState();  // Bind level data and load the first question.
+            InitializeComponent();     // Designer-created UI (labels, picture boxes, panels)
+            LoadGraphics();            // Load graphical assets such as the menu button image
+            InitializeRuntimeState();  // Bind level data and load the first question
         }
 
-        // Initializes runtime state such as labels, question index and score.
+        // Initializes runtime state such as labels, question index and score
         private void InitializeRuntimeState()
         {
             _currentQuestionIndex = 0;
@@ -64,7 +64,7 @@ namespace bezpieczna_paczkaApp
         }
 
         /// <summary>
-        /// Prepares the initial state of the intro overlay.
+        /// Prepares the initial state of the intro overlay
         /// </summary>
         private void SetupIntro()
         {
@@ -79,17 +79,18 @@ namespace bezpieczna_paczkaApp
         }
 
         /// <summary>
-        /// Handler for the 'Next' button in the first part of the intro.
+        /// Handler for the 'Next' button in the first part of the intro
         /// </summary>
         private void btnNext_Click(object sender, EventArgs e)
         {
-            // 1. Hide the text panel
+            // Hiding the text panel
             pnlIntroStep1.Visible = false;
 
-            // 2. Load the tutorial image based on the level ID
-            // We can use a naming convention like 'signs_level_1.png'
-            string graphicsPath = Path.Combine(Application.StartupPath, "graphics");
-            string tutorialImgName = $"znaki_poziom_{_levelData.LevelID}.png"; // Example dynamic name
+            // Loading the tutorial image based on the level ID
+            // Using naming convention 'znaki_poziom_{what level the player is playing}.png'
+            string projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..", "..")); // Go back three folders
+            string graphicsPath = Path.Combine(projectRoot, "res", "graphics");
+            string tutorialImgName = $"znaki_poziom_{_levelData.LevelID}.png"; // Dynamic name using parameter of _levelData
             string fullPath = Path.Combine(graphicsPath, tutorialImgName);
 
             if (File.Exists(fullPath))
@@ -97,7 +98,7 @@ namespace bezpieczna_paczkaApp
                 picSignsTutorial.Image = Image.FromFile(fullPath);
             }
 
-            // 3. Show the tutorial panel
+            // Showing the tutorial panel with the image
             pnlIntroStep2.Visible = true;
         }
 
@@ -108,14 +109,13 @@ namespace bezpieczna_paczkaApp
         {
             // Hide the whole intro overlay
             pnlIntro.Visible = false;
-            //_currentQuestionIndex = 0;
             LoadQuestion(_currentQuestionIndex);
         }
 
-        // Loads a single question by index and updates all UI elements accordingly.
+        // Loads a single question by index and updates all UI elements accordingly
         private void LoadQuestion(int questionIndex)
         {
-            // Defensive check to avoid out-of-range errors.
+            // Defensive check to avoid out-of-range errors
             if (questionIndex < 0 || questionIndex >= _levelData.Questions.Count)
             {
                 throw new ArgumentOutOfRangeException(nameof(questionIndex));
@@ -123,27 +123,27 @@ namespace bezpieczna_paczkaApp
 
             Question currentQuestion = _levelData.Questions[questionIndex];
 
-            // Update question text label.
+            // Update question text label
             lblQuestionText.Text = currentQuestion.QuestionText;
 
-            // Update progress label: "Pytanie X / N".
-            int displayedQuestionNumber = questionIndex + 1; // Offset to convert zero-based index to human-readable number.
+            // Update progress label: "Pytanie X / N"
+            int displayedQuestionNumber = questionIndex + 1; // Offset to convert zero-based index to human-readable number
             lblProgress.Text = $"Paczka\n{displayedQuestionNumber} / {totalQuestionsCount}";
 
-            // Load scenario image.
+            // Load scenario image
             LoadScenarioImage(currentQuestion.ScenarioImagePath);
 
-            // Create or update answer "buttons" (picture boxes) for the current question.
+            // Create or update answer "buttons" (picture boxes) for the current question
             DisplayAnswerOptions(currentQuestion.Options);
 
-            // Update score label.
+            // Update score label
             lblScore.Text = $"Dostarczono {_correctAnswersCount}";
         }
 
-        // Loads the scenario image from the given file path into the PictureBox.
+        // Loads the scenario image from the given file path into the PictureBox
         private void LoadScenarioImage(string imagePath)
         {
-            // Dispose previous image to free resources, if needed.
+            // Dispose previous image to free resources, if needed
             if (picScenario.Image != null)
             {
                 picScenario.Image.Dispose();
@@ -152,7 +152,7 @@ namespace bezpieczna_paczkaApp
 
             if (string.IsNullOrWhiteSpace(imagePath))
             {
-                // If no image is provided, we simply do not display anything.
+                // If no image is provided, we simply do not display anything
                 return;
             }
 
@@ -174,15 +174,15 @@ namespace bezpieczna_paczkaApp
             }
         }
 
-        // Creates or updates answer "buttons" using PictureBox controls according to the provided list of options.
+        // Creates or updates answer "buttons" using PictureBox controls according to the provided list of options
         private void DisplayAnswerOptions(List<AnswerOption> options)
         {
-            // Clear any existing controls in the answers panel.
+            // Clear any existing controls in the answers panel
             pnlAnswers.Controls.Clear();
 
             int buttonsToCreate = options.Count; // check how many answers are for this question
 
-            // Limit the number of displayed options by the defined maximum.
+            // Limit the number of displayed options by the defined maximum
             if (buttonsToCreate > MaxAnswerButtons)
             {
                 buttonsToCreate = MaxAnswerButtons;
@@ -214,7 +214,7 @@ namespace bezpieczna_paczkaApp
             }
         }
 
-        // Handles player's click on one of the answer picture boxes.
+        // Handles player's click on one of the answer picture boxes
         private void HandleAnswerButtonClick(object sender, EventArgs e)
         {
             Button clickedButton = (Button)sender; // Casting sender to a Button type to retrieve the attached AnswerOption
@@ -245,7 +245,7 @@ namespace bezpieczna_paczkaApp
                 answerMessage = "Niepoprawna odpowiedź!";
             }
 
-                // Show feedback message for the chosen option.
+                // Show feedback message for the chosen option
                 MessageBox.Show(selectedOption.FeedbackMessage, answerMessage);
 
             // Placeholder for running the van animation based on the chosen option
@@ -312,8 +312,8 @@ namespace bezpieczna_paczkaApp
         // Loads graphical assets required by the gameplay screen
         private void LoadGraphics()
         {
-            string basePath = Application.StartupPath;
-            string graphicsPath = Path.Combine(basePath, "graphics");
+            string projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..",".."));
+            string graphicsPath = Path.Combine(projectRoot, "res", "graphics");
 
             try
             {
@@ -329,6 +329,7 @@ namespace bezpieczna_paczkaApp
                 string uniPath = Path.Combine(graphicsPath, "pg_logo_czarne.png");
                 picUni.Image = Image.FromFile(uniPath);
 
+                // Load van image
                 string vanPath = Path.Combine(graphicsPath, "pojazd1.png");
                 picVan.Image = Image.FromFile(vanPath);
             }
