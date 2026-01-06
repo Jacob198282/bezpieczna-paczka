@@ -3,49 +3,46 @@ using System.Windows.Forms;
 
 namespace bezpieczna_paczkaApp
 {
-    // UserControl for the main menu screen.
+    // UserControl for the main menu screen
     public partial class MainMenuControl : UserControl
     {
-        // Public event to notify the host form (GameWindow) when the level selection button is clicked.
+        // Public event to notify the host form (GameWindow) when the level selection button is clicked
         public event EventHandler SelectLevelClicked;
 
         public MainMenuControl()
         {
             InitializeComponent();
             
-            DoubleBuffered = true; // removes flickering of the background
+            DoubleBuffered = true; // Removes flickering of the background
         }
 
-        // Handles the Click event for the 'Select Level' button.
+        // Handles the Click event for the 'Select Level' button
         private void picSelectLevel_Click(object sender, EventArgs e)
         {
             // Notify the GameWindow to switch screens.
             SelectLevelClicked?.Invoke(this, EventArgs.Empty);
         }
 
-        // Handles the Click event for the 'Exit Game' button.
+        // Handles the Click event for the 'Exit Game' button
         private void picExitGame_Click(object sender, EventArgs e)
         {
-            // Safely exits the application.
+            // Safely exits the application
             Application.Exit();
         }
+        
+        // Loading method for this UserControl
         private void MainMenuConrol_Load(object sender, EventArgs e)
         {
-            // You can add any initialization code here that needs to run
-            // after the components are loaded.
-            // For example, loading high scores, user settings, etc.
-            // This is the best place to load images from files.
-            LoadGraphics();
+            LoadGraphics(); // loading graphics for this UserControl
         }
 
 
-        /// Loads all graphical assets from the 'graphics' folder.
+        /// Loads all graphical assets from the 'graphics' folder
 
         private void LoadGraphics()
         {
-            // Get the directory where the .exe file is running
-            string basePath = Application.StartupPath;
-            string graphicsPath = Path.Combine(basePath, "graphics");
+            string projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..","..")); // Go back three folders
+            string graphicsPath = Path.Combine(projectRoot, "res", "graphics");
 
             try
             {
@@ -67,7 +64,7 @@ namespace bezpieczna_paczkaApp
             }
             catch (FileNotFoundException ex)
             {
-                // If a file is missing, show a helpful error message instead of crashing.
+                // If a file is missing, show a helpful error message instead of crashing
                 MessageBox.Show($"Błąd wczytywania grafiki: Nie znaleziono pliku!\n{ex.Message}", "Błąd Pliku");
                 Application.Exit(); // Exit if graphics are missing
             }
