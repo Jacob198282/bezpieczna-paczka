@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) Jacob198282 Gdansk University of Technology
+ * MIT License
+ * Documentation under https://github.com/Jacob198282/bezpieczna-paczka
+ */
+
 using System;
 using System.Windows.Forms;
 
@@ -14,18 +20,22 @@ namespace bezpieczna_paczkaApp
         private MainMenuControl mainMenu;
         private LevelSelectControl levelSelect;
         private GameMenuControl gameMenu;
+        public string projectRoot; // path to the project
+        public string graphicsPath; // path to folder with graphics
 
         public GameWindow()
         {
             // This method is required for the designer support
             // It initializes all components placed on the form (defined in GameWindow.Designer.cs)
             InitializeComponent();
+            projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..", "..")); // Go back three folders
+            graphicsPath = Path.Combine(projectRoot, "res", "graphics");
             DoubleBuffered = true; // Removes flickering from the screen
 
             // Initialization of user controls
-            mainMenu = new MainMenuControl();
-            levelSelect = new LevelSelectControl();
-            gameMenu = new GameMenuControl();
+            mainMenu = new MainMenuControl(projectRoot,graphicsPath);
+            levelSelect = new LevelSelectControl(projectRoot, graphicsPath);
+            gameMenu = new GameMenuControl(projectRoot, graphicsPath);
 
             // Configuration and adding controls to the panel
             SetupControl(mainMenu);
@@ -95,7 +105,7 @@ namespace bezpieczna_paczkaApp
             LevelData data = LevelProvider.GetLevel(e.LevelId);
 
             // Create the gameplay control with this data
-            LevelGameplayControl gameplay = new LevelGameplayControl(data);
+            LevelGameplayControl gameplay = new LevelGameplayControl(data, projectRoot, graphicsPath);
 
             gameplay.MenuRequested += HandleMenuClicked;
 
@@ -144,8 +154,8 @@ namespace bezpieczna_paczkaApp
         {
             //string basePath = Application.StartupPath;
             //string graphicsPath = Path.Combine(basePath, "graphics");
-            string projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..","..")); // Go back three folders
-            string graphicsPath = Path.Combine(projectRoot, "res", "graphics");
+            //string projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..","..")); // Go back three folders
+            //string graphicsPath = Path.Combine(projectRoot, "res", "graphics");
 
             try
             {
