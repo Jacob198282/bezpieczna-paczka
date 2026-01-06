@@ -5,20 +5,20 @@ namespace bezpieczna_paczkaApp
 {
 
     /// The main welcome screen for the 'Bezpieczna Paczka' game
-    /// It displays the logo and navigation buttons.
+    /// It displays the logo and navigation buttons
 
     public partial class GameWindow
     {
 
-        /// Constructor for the Welcome Form.
+        /// Constructor for the Welcome Form
         private MainMenuControl mainMenu;
         private LevelSelectControl levelSelect;
         private GameMenuControl gameMenu;
 
         public GameWindow()
         {
-            // This method is required for the designer support.
-            // It initializes all components placed on the form (defined in GameWindow.Designer.cs).
+            // This method is required for the designer support
+            // It initializes all components placed on the form (defined in GameWindow.Designer.cs)
             InitializeComponent();
             DoubleBuffered = true; // Removes flickering from the screen
 
@@ -50,7 +50,7 @@ namespace bezpieczna_paczkaApp
                 CreateParams cp = base.CreateParams;
                 // Flag 0x02000000 is WS_EX_COMPOSITED
                 // Window and child-controls (UserControls) will be drawn
-                // in one cycle, which eliminates flickering.
+                // in one cycle, which eliminates flickering
                 cp.ExStyle |= 0x02000000;
                 return cp;
             }
@@ -73,21 +73,21 @@ namespace bezpieczna_paczkaApp
 
         // --- Event Handlers for UserControl events ---
 
-        /// Handler for the event raised by MainMenuControl when 'Select Level' is clicked.
+        /// Handler for the event raised by MainMenuControl when 'Select Level' is clicked
 
         private void HandleSelectLevelClicked(object sender, EventArgs e)
         {
             SwitchUserControl(mainMenu, levelSelect); // switch controls
         }
 
-        /// Handler for the event raised by LevelSelectControl when 'Back' is clicked.
+        /// Handler for the event raised by LevelSelectControl when 'Back' is clicked
         private void HandleBackClicked(object sender, EventArgs e)
         {
-            // Call the existing method to switch back to the main menu view.
+            // Call the existing method to switch back to the main menu view
             SwitchUserControl(levelSelect, mainMenu); // switch controls
         }
 
-        /// Handler for the event raised by LevelSelectControl when a level is chosen.
+        /// Handler for the event raised by LevelSelectControl when a level is chosen
 
         private void HandleLevelSelected(object sender, LevelSelectControl.LevelSelectedEventArgs e)
         {
@@ -109,8 +109,6 @@ namespace bezpieczna_paczkaApp
         /// <summary>
         /// Handler for menu button being clicked during gameplay
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void HandleMenuClicked(object sender, EventArgs e)
         {
             gameMenu.BringToFront();
@@ -122,7 +120,6 @@ namespace bezpieczna_paczkaApp
         {
             gameMenu.Visible = false;
             // Find the current gameplay control in the container and switch from it
-            //UserControl currentGameplay = pnlContainer.Controls.OfType<LevelGameplayControl>().FirstOrDefault();
             if (gameMenu != null)
             {
                 SwitchUserControl(gameMenu, levelSelect);
@@ -145,8 +142,10 @@ namespace bezpieczna_paczkaApp
         // function for loading background from the local directory ./graphics/
         private void LoadBackground()
         {
-            string basePath = Application.StartupPath;
-            string graphicsPath = Path.Combine(basePath, "graphics");
+            //string basePath = Application.StartupPath;
+            //string graphicsPath = Path.Combine(basePath, "graphics");
+            string projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..","..")); // Go back three folders
+            string graphicsPath = Path.Combine(projectRoot, "res", "graphics");
 
             try
             {
