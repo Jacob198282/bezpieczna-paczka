@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * Copyright (c) Jacob198282 Gdansk University of Technology
+ * MIT License
+ * Documentation under https://github.com/Jacob198282/bezpieczna-paczka
+ */
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -15,13 +21,20 @@ namespace bezpieczna_paczkaApp
         // Events to notify the parent container about user choices
         public event EventHandler ResumeClicked;
         public event EventHandler ExitToLevelSelectClicked;
-        public GameMenuControl()
+
+        public string projectRoot; // path to the project
+        public string graphicsPath; // path to folder with graphics
+        public GameMenuControl(string projectRoot, string graphicsPath)
         {
             // Initialize component
             InitializeComponent();
             DoubleBuffered = true; // anti-flickering 
             // Load graphics fot the in-game menu
             Dock = DockStyle.Fill;
+
+            this.projectRoot = projectRoot;
+            this.graphicsPath = graphicsPath;
+
             LoadGraphics();
         }
         private void picResume_Click(object sender, EventArgs e)
@@ -45,8 +58,8 @@ namespace bezpieczna_paczkaApp
 
         private void LoadGraphics()
         {
-            string projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..", "..")); // Go back three folders
-            string graphicsPath = Path.Combine(projectRoot, "res", "graphics");
+            //string projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..", "..")); // Go back three folders
+            //string graphicsPath = Path.Combine(projectRoot, "res", "graphics");
 
             try
             {
