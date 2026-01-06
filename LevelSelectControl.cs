@@ -3,12 +3,12 @@ using System.Windows.Forms;
 
 namespace bezpieczna_paczkaApp
 {
-    // UserControl for the level selection screen.
+    // UserControl for the level selection screen
     public partial class LevelSelectControl : UserControl
     {
-        // Event to notify the host form when a level is chosen.
+        // Event to notify the host form when a level is chosen
         public event EventHandler<LevelSelectedEventArgs> LevelSelected;
-        // Event to notify the host form that the user wants to go back to the main menu.
+        // Event to notify the host form that the user wants to go back to the main menu
         public event EventHandler BackClicked;
 
         // Define custom event arguments to pass the selected level ID (e.g., 1, 2, 3)
@@ -25,7 +25,7 @@ namespace bezpieczna_paczkaApp
 
         private void picLevel1_Click(object sender, EventArgs e)
         {
-            // Pass the chosen level ID.
+            // Pass the chosen level ID
             LevelSelected?.Invoke(this, new LevelSelectedEventArgs { LevelId = 1 });
         }
 
@@ -39,29 +39,26 @@ namespace bezpieczna_paczkaApp
             LevelSelected?.Invoke(this, new LevelSelectedEventArgs { LevelId = 3 });
         }
 
+        // Loading method for this UserControl
         private void LevelSelectControl_Load(object sender, EventArgs e)
         {
-            // You can add any initialization code here that needs to run
-            // after the components are loaded.
-            // For example, loading high scores, user settings, etc.
-            // This is the best place to load images from files.
-            LoadGraphics();
+
+            LoadGraphics(); // Loads images for this UserControl
         }
 
-        /// Handles the Click event for the 'Back' picture button.
+        /// Handles the Click event for the 'Back' picture button
         private void picBack_Click(object sender, EventArgs e)
         {
-            // Notify GameWindow to switch back to Main Menu.
+            // Notify GameWindow to switch back to Main Menu
             BackClicked?.Invoke(this, EventArgs.Empty);
         }
 
-        /// Loads all graphical assets from the 'graphics' folder.
+        /// Loads all graphical assets from the 'graphics' folder
 
         private void LoadGraphics()
         {
-            // Get the directory where the .exe file is running
-            string basePath = Application.StartupPath;
-            string graphicsPath = Path.Combine(basePath, "graphics");
+            string projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..","..")); // Go back three folders
+            string graphicsPath = Path.Combine(projectRoot, "res", "graphics");
 
             try
             {
@@ -85,7 +82,7 @@ namespace bezpieczna_paczkaApp
             }
             catch (FileNotFoundException ex)
             {
-                // If a file is missing, show a helpful error message instead of crashing.
+                // If a file is missing, show a helpful error message instead of crashing
                 MessageBox.Show($"Błąd wczytywania grafiki: Nie znaleziono pliku!\n{ex.Message}", "Błąd Pliku");
                 Application.Exit(); // Exit if graphics are missing
             }
