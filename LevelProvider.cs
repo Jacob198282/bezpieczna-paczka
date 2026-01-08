@@ -71,41 +71,67 @@ namespace bezpieczna_paczkaApp
 
             // --- Question 1 Configuration ---
             Question q1 = new Question(
-                "Zbliżasz się do skrzyżowania równorzędnego. Z Twojej prawej nadjeżdża rowerzysta. Co robisz?",
-                "1.png" // Background image filename
+                "Zbliżasz się do skrzyżowania ze znakiem widocznym na rysunku. W którę stronę pojedziesz, aby dotrzeć do celu?",
+                "1" // Background image filename
             );
 
             q1.AddOption(new AnswerOption(
-                "Ustępuję pierwszeństwa rowerzyście",
+                "W prawo",
                 true,   // Is correct
-                new List<Waypoint>
-                { 
-                    new Waypoint(227,290,0f),
-                    new Waypoint(227,339,90f),
-                    new Waypoint(356,291,0f),
-                    new Waypoint(437,182,-90f),
-                    new Waypoint(438,85,0f),
-                    new Waypoint(384,44,-90f),
-                    new Waypoint(1,43,0f),
-                    new Waypoint(15,5,-90f),
-                    new Waypoint(15,238,0f),
-                    new Waypoint(167,290,-90f)
-                },
-                "Brawo! Na skrzyżowaniu równorzędnym obowiązuje zasada prawej ręki."
+                "Brawo! Znak wskazuje nakaz jazdy w prawo przed znakiem."
             ));
 
             q1.AddOption(new AnswerOption(
-                "Przejeżdżam pierwszy, jestem większy",
+                "W lewo",
                 false,  // Is incorrect
-                new List<Waypoint>
-                {
-                    new Waypoint(227,290,0f),
-                    new Waypoint(227,339,-90f)
-                },
-                "Błąd! Rowerzysta miał pierwszeństwo. Mogło dojść do kolizji!"
+                "Błąd! Według znaku nie można skręcić w lewo. Mogło być niebezpiecznie!\n Prawidłowa odpowiedź to w prawo"
             ));
 
             level1.Questions.Add(q1);
+
+            Question q2 = new Question(
+                "Przed tobą budynek ratusza i chciałbyś dojechać do budynku szkoły. Gdyby istniała inna droga, mógłbyś skręcić w lewo lub pojechać prosto?",
+                "2"
+            );
+
+            q2.AddOption(new AnswerOption(
+                "Mogę jechać prosto. \nTrzeba coś załatwić w ratuszu.",
+                false,
+                "Błąd! Mogłeś trafić na autokar! \nPrawidłowa odpowiedź to w prawo!"
+            ));
+
+            q2.AddOption(new AnswerOption(
+                "Mogę jechać w lewo. \nMoże później przyjadę do szkoły.",
+                false,
+                "Błąd! \nPrawidłowa odpowiedź to w prawo!"
+            ));
+
+            q2.AddOption(new AnswerOption(
+                "W prawo. \nTrzeba dostarczyć paczki jak najszybciej.",
+                true,
+                "Brawo! Znak wskazuje nakaz jazdy w prawo za znakiem!"
+            ));
+
+            level1.Questions.Add(q2);
+
+            Question q3 = new Question(
+                "Przejechałeś miejsce dostawy. Czy możesz zawrócić na tym skrzyżowaniu?",
+                "3"
+            );
+
+            q3.AddOption(new AnswerOption(
+                "Nie ma problemu, \ntak będzie najszybciej! ",
+                false,
+                "Błąd! Widząc ten znak nie można zawracać na tym skrzyżowaniu!"
+            ));
+
+            q3.AddOption(new AnswerOption(
+                "Muszę pojechać\n w prawo zgodnie ze znakiem",
+                true,
+                "Brawo! Znak wskazuje nakaz jazdy w lewo przed znakiem i nie można zawracać."
+            ));
+
+            level1.Questions.Add(q3);
 
             return level1;
         }

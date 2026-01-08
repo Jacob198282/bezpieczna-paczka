@@ -44,16 +44,14 @@ namespace bezpieczna_paczkaApp
         // Font for the answer buttons, buttons and labels
         public Font buttonFont = new Font("Gill Sans Ultra Bold", 20.25F, FontStyle.Italic, GraphicsUnit.Point, 238);
 
+        public Font answerFont = new Font("Gill Sans MT Condensed", 18F, FontStyle.Regular, GraphicsUnit.Point, 238);
+
         public string projectRoot; // path to the project
         public string graphicsPath; // path to folder with graphics
         public string scenarioPath; // path to folder containing scenario pictures
 
-        //public System.Windows.Forms.Timer _animationTimer;
-        //public List<Waypoint> _currentPath; // Path for the current animation
-        //public int _currentWaypointIndex; // Which point are we moving towards
-        //public const int MovementSpeed = 8; // Speed in pixels per tick
-        //public AnswerOption _lastSelectedOption; // To show feedback after animation
-        //public float _lastRotation = 0f;
+        // ID of the vehicle used in current gameplay session
+        public int currentVehicleID;
 
         public LevelGameplayControl(LevelData levelData, string projectRoot, string graphicsPath)
         {
@@ -67,11 +65,9 @@ namespace bezpieczna_paczkaApp
 
             scenarioPath = Path.Combine(graphicsPath, "scenario"); // Setting path to folder with scenario images
 
-            //_animationTimer = new System.Windows.Forms.Timer(); // Creating timer for animation
-            //_animationTimer.Interval = 16; // ~60 FPS
-            //_animationTimer.Tick += AnimationTimer_Tick;
-
             _levelData = levelData;
+
+            currentVehicleID = PlayerProgress.GetCurrentVehicleID();
 
             InitializeComponent();     // Designer-created UI (labels, picture boxes, panels)
             LoadGraphics();            // Load graphical assets such as the menu button image
@@ -170,7 +166,7 @@ namespace bezpieczna_paczkaApp
         }
 
         // Loads the scenario image from the given file path into the PictureBox
-        private void LoadScenarioImage(string imagePath)
+        private void LoadScenarioImage(string scenarioID)
         {
             // Dispose previous image to free resources, if needed
             if (pnlScenario.BackgroundImage != null)
@@ -179,7 +175,7 @@ namespace bezpieczna_paczkaApp
                 pnlScenario.BackgroundImage = null;
             }
 
-            if (string.IsNullOrWhiteSpace(imagePath))
+            if (string.IsNullOrWhiteSpace(scenarioID))
             {
                 // If no image is provided, we simply do not display anything
                 return;
@@ -188,9 +184,7 @@ namespace bezpieczna_paczkaApp
             try
             {
                 // Getting the name for the folder depending on what level is actually on
-                string folderName = $"level_{_levelData.LevelID}"; // Assuming that level ID is 1, 2 or 3
-                string scenarioLevelPath = Path.Combine(scenarioPath, folderName); // Setting path to folder containing scenarios for this level
-                imagePath = Path.Combine(scenarioLevelPath, imagePath); // Setting path to the image
+                string imagePath = BuildScenarioPath(scenarioID);
                 pnlScenario.BackgroundImage = Image.FromFile(imagePath);
             }
             catch (FileNotFoundException ex)
@@ -207,6 +201,24 @@ namespace bezpieczna_paczkaApp
             }
         }
 
+        /// <summary>
+        /// Builds full path to scenario image based on scenario ID and current vehicle.
+        /// </summary>
+        /// <param name="scenarioId">Scenario identifier (e.g., "1", "2", "3")</param>
+        /// <returns>Full path like "scenario/level_1/1_pojazd_1.png"</returns>
+        private string BuildScenarioPath(string scenarioID)
+        {
+            // Build filename: {scenarioId}_pojazd_{vehicleId}.png
+            string fileName = $"{scenarioID}_pojazd_{currentVehicleID}.png";
+
+            // Build folder path based on level ID
+            string folderName = $"level_{_levelData.LevelID}";
+            string scenarioLevelPath = Path.Combine(scenarioPath, folderName); // Setting path to folder containing scenarios for this level
+
+            // Return complete path
+            return Path.Combine(scenarioLevelPath, fileName);
+        }
+
         // Creates or updates answer "buttons" using PictureBox controls according to the provided list of options
         private void DisplayAnswerOptions(List<AnswerOption> options)
         {
@@ -221,6 +233,8 @@ namespace bezpieczna_paczkaApp
                 buttonsToCreate = MaxAnswerButtons;
             }
 
+            
+
             foreach (AnswerOption option in options)
             {
                 // Create a new Button instance
@@ -230,11 +244,17 @@ namespace bezpieczna_paczkaApp
                 btn.Text = option.AnswerText;
                 btn.Width = 300; // Fixed width, so that up to four buttons could fit in one pnlAnswers panel
                 btn.Height = 140; // Fixed height for better touch/click target
-                btn.Font = buttonFont; // Using publicly created font instead of creating each time new font
+                btn.Font = answerFont; // Using publicly created font instead of creating each time new font
                 btn.BackColor = Color.WhiteSmoke;
                 btn.FlatStyle = FlatStyle.Flat;
                 btn.Cursor = Cursors.Hand;
                 btn.Margin = new Padding(0, 5, 0, 5); // Add spacing between buttons
+                btn.AutoSize = true; // 
+                btn.AutoSizeMode = AutoSizeMode.GrowOnly;
+                //btn.Anchor = AnchorStyles.Left;
+                //btn.Anchor = AnchorStyles.Right;
+                btn.Anchor = AnchorStyles.Top;
+                btn.Anchor = AnchorStyles.Bottom;
 
                 // Storing the whole AnswerOption object in the Tag for the click event
                 btn.Tag = option;
@@ -270,7 +290,7 @@ namespace bezpieczna_paczkaApp
             if (selectedOption.IsCorrect)
             {
                 _correctAnswersCount++;
-                lblScore.Text = $"Dostarczono: {_correctAnswersCount}"; // Immediatelly update score label
+                lblScore.Text = $"Dostarczono {_correctAnswersCount}"; // Immediatelly update score label
                 answerMessage = "Poprawna odpowiedź!";
             }
             else
@@ -281,113 +301,9 @@ namespace bezpieczna_paczkaApp
                 // Show feedback message for the chosen option
                 MessageBox.Show(selectedOption.FeedbackMessage, answerMessage);
 
-            // Placeholder for running the van animation based on the chosen option
-            PlayAnswerAnimation(selectedOption);
-
             // Proceed to the next question or finish the level
             GoToNextQuestionOrFinish();
         }
-
-        // Plays the animation of the van according to the selected answer
-        // This is a placeholder method that will be implemented later
-        private void PlayAnswerAnimation(AnswerOption selectedOption)
-        {
-            //_lastSelectedOption = selectedOption;
-            //_currentPath = selectedOption.Path;
-            //_currentWaypointIndex = 0;
-
-            //// Disable buttons so player can't click during animation
-            //pnlAnswers.Enabled = false;
-
-            //_animationTimer.Start();
-            return;
-        }
-
-        //private void AnimationTimer_Tick(object sender, EventArgs e)
-        //{
-        //    if (_currentPath == null || _currentWaypointIndex >= _currentPath.Count)
-        //    {
-        //        _animationTimer.Stop();
-        //        // Feedback logic here
-        //        return;
-        //    }
-
-        //    Waypoint target = _currentPath[_currentWaypointIndex];
-        //    Point targetPos = target.Position;
-
-        //    int curX = picVan.Location.X;
-        //    int curY = picVan.Location.Y;
-
-        //    // 1. Handle Rotation
-        //    // We update the image if the rotation of the target waypoint is different
-        //    if (Math.Abs(_lastRotation - target.Rotation) > 0.1f)
-        //    {
-        //        // Load original van image first to avoid quality loss during multiple rotations
-        //        //string graphicsPath = Path.Combine(Application.StartupPath, "..", "res", "graphics");
-        //        Image originalVan = Image.FromFile(Path.Combine(graphicsPath, "pojazd1.png"));
-
-        //        picVan.Image = RotateImage(originalVan, target.Rotation);
-        //        _lastRotation = target.Rotation;
-        //    }
-
-        //    // 2. Handle Movement
-        //    int diffX = targetPos.X - curX;
-        //    int diffY = targetPos.Y - curY;
-
-        //    if (Math.Abs(diffX) <= MovementSpeed && Math.Abs(diffY) <= MovementSpeed)
-        //    {
-        //        picVan.Location = targetPos;
-        //        _currentWaypointIndex++;
-        //        return;
-        //    }
-
-        //    int stepX = diffX == 0 ? 0 : (diffX > 0 ? MovementSpeed : -MovementSpeed);
-        //    int stepY = diffY == 0 ? 0 : (diffY > 0 ? MovementSpeed : -MovementSpeed);
-
-        //    picVan.Location = new Point(curX + stepX, curY + stepY);
-        //}
-
-        //// Method from stack overflow, Tony The Lion
-        ///// <summary>
-        ///// Method to rotate an image either clockwise or counter-clockwise
-        ///// </summary>
-        ///// <param name="img">the image to be rotated</param>
-        ///// <param name="rotationAngle">the angle (in degrees).
-        ///// NOTE: 
-        ///// Positive values will rotate clockwise
-        ///// negative values will rotate counter-clockwise
-        ///// </param>
-        ///// <returns></returns>
-        //public static Image RotateImage(Image img, float rotationAngle)
-        //{
-        //    //create an empty Bitmap image
-        //    Bitmap bmp = new Bitmap(img.Width, img.Height);
-
-        //    //turn the Bitmap into a Graphics object
-        //    Graphics gfx = Graphics.FromImage(bmp);
-
-        //    //now we set the rotation point to the center of our image
-        //    gfx.TranslateTransform((float)bmp.Width / 2, (float)bmp.Height / 2);
-
-        //    //now rotate the image
-        //    gfx.RotateTransform(rotationAngle);
-
-        //    gfx.TranslateTransform(-(float)bmp.Width / 2, -(float)bmp.Height / 2);
-
-        //    //set the InterpolationMode to HighQualityBicubic so to ensure a high
-        //    //quality image once it is transformed to the specified size
-        //    gfx.InterpolationMode = InterpolationMode.HighQualityBicubic;
-        //    gfx.SmoothingMode = SmoothingMode.HighQuality; // added smoothing
-
-        //    //now draw our new image onto the graphics object
-        //    gfx.DrawImage(img, new Point(0, 0));
-
-        //    //dispose of our Graphics object
-        //    gfx.Dispose();
-
-        //    //return the image
-        //    return bmp;
-        //}
 
         // Moves to the next question if available, otherwise completes the level
         private void GoToNextQuestionOrFinish()
@@ -408,25 +324,61 @@ namespace bezpieczna_paczkaApp
         // Calculates final result, checks if the level is passed and raises the LevelCompleted event
         private void CompleteLevel()
         {
-
+            // Somehow incompleted level
             if (totalQuestionsCount <= 0)
             {
                 return;
             }
 
+            // Calculate the ratio of the answers
             double correctRatio = (double)_correctAnswersCount / totalQuestionsCount;
 
+            // Check if the player passed the test
             bool isPassed = correctRatio >= _levelData.PassingThreshold;
+
+            // Calculate number of stars collected by player
+            int starsEarned = CalculateStars(correctRatio);
 
             LevelCompletedEventArgs eventArgs = new LevelCompletedEventArgs
             {
                 CorrectAnswersCount = _correctAnswersCount,
                 TotalQuestionsCount = totalQuestionsCount,
                 CorrectRatio = correctRatio,
-                IsPassed = isPassed
+                StarsEarned = starsEarned,
+                IsPassed = isPassed,
+                LevelID = _levelData.LevelID
             };
 
+            // Raise event
             LevelCompleted?.Invoke(this, eventArgs);
+        }
+
+        /// Calculates the number of stars earned based on the player's correct answer ratio
+        private int CalculateStars(double correctRatio)
+        {
+            // Check thresholds from highest to lowest
+            // This order ensures we award the maximum applicable stars
+
+            if (correctRatio >= 1.0)
+            {
+                // Perfect score - all questions answered correctly
+                return 3;
+            }
+            else if (correctRatio >= 0.95)
+            {
+                // Excellent performance - 95% or more correct
+                return 2;
+            }
+            else if (correctRatio >= 0.90)
+            {
+                // Good performance - 90% or more correct (minimum to pass)
+                return 1;
+            }
+            else
+            {
+                // Below passing threshold - level not completed successfully
+                return 0;
+            }
         }
 
         // Handles click on the "Menu" picture button to request opening the in-level menu
@@ -438,9 +390,6 @@ namespace bezpieczna_paczkaApp
         // Loads graphical assets required by the gameplay screen
         private void LoadGraphics()
         {
-            //string projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..",".."));
-            //string graphicsPath = Path.Combine(projectRoot, "res", "graphics");
-
             try
             {
                 // Load image for the menu button
@@ -488,5 +437,11 @@ namespace bezpieczna_paczkaApp
 
         // Indicates whether the player has passed the level according to PassingThreshold
         public bool IsPassed { get; set; }
+
+        /// The number of stars earned based on the player's performance
+        public int StarsEarned { get; set; }
+
+        /// The unique identifier of the level that was completed
+        public int LevelID { get; set; }
     }
 }

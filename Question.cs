@@ -20,13 +20,8 @@ namespace bezpieczna_paczkaApp
         // A list of complex answer options instead of just strings
         public List<AnswerOption> Options { get; set; }
 
-        // Path to the image representing the starting state of the road
+        // Number that is required to dynamically build a path to the scenario image
         public string ScenarioImagePath { get; set; }
-
-        // Constant to define the starting position of the van for this question
-        // Used to reset the van before each new question
-        public readonly int START_X_POSITION = 600;
-        public readonly int START_Y_POSITION = 800;
 
         /// Constructor for the Question.
         public Question(string text, string imagePath)

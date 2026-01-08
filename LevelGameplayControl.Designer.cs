@@ -95,6 +95,7 @@
             // pnlAnswers
             // 
             pnlAnswers.AutoScroll = true;
+            pnlAnswers.AutoScrollMinSize = new Size(1200, 0);
             pnlAnswers.BackColor = Color.Transparent;
             pnlAnswers.Location = new Point(40, 130);
             pnlAnswers.Name = "pnlAnswers";
@@ -143,6 +144,7 @@
             picVan.SizeMode = PictureBoxSizeMode.Zoom;
             picVan.TabIndex = 9;
             picVan.TabStop = false;
+            picVan.Visible = false;
             // 
             // pnlIntro
             // 
