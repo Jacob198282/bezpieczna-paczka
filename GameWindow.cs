@@ -108,6 +108,7 @@ namespace bezpieczna_paczkaApp
             LevelGameplayControl gameplay = new LevelGameplayControl(data, projectRoot, graphicsPath);
 
             gameplay.MenuRequested += HandleMenuClicked;
+            gameplay.LevelCompleted += HandleLevelCompleted;
 
             // Setup controls that will be visible during the game
             SetupControl(gameplay);
@@ -123,6 +124,43 @@ namespace bezpieczna_paczkaApp
         {
             gameMenu.BringToFront();
             gameMenu.Visible = true;
+        }
+
+        /// Handles the event raised when a player completes all questions in a level
+        private void HandleLevelCompleted(object sender, LevelCompletedEventArgs e)
+        {
+            // Setting best score of the level
+            PlayerProgress.SetStars(e.LevelID, e.StarsEarned);
+
+            string resultMessage;
+            string messageTitle;
+
+            if (e.IsPassed)
+            {
+                // player passed
+                resultMessage = $"Gratulacje! Ukonczyles poziom!\n\n" +
+                               $"Poprawne odpowiedzi: {e.CorrectAnswersCount}/{e.TotalQuestionsCount}\n" +
+                               $"Zdobyte gwiazdki: {e.StarsEarned}/{PlayerProgress.MaxStarsPerLevel - e.StarsEarned}";
+
+                messageTitle = "Poziom ukonczony!";
+            }
+            else
+            {
+                // Player did not pass - show encouraging message to try again
+                resultMessage = $"Niestety, nie udalo sie ukonczyc poziomu.\n\n" +
+                               $"Poprawne odpowiedzi: {e.CorrectAnswersCount}/{e.TotalQuestionsCount}\n" +
+                               $"Sprobuj ponownie!";
+
+                messageTitle = "Sprobuj ponownie";
+            }
+
+            // Display the result dialog to the player
+            MessageBox.Show(resultMessage, messageTitle);
+
+            // This ensures the total stars display is current when player returns
+            levelSelect.UpdateStarsDisplay();
+
+            SwitchUserControl((UserControl)sender, levelSelect);
         }
 
         /// Handler for exiting the game and entering select level menu
@@ -146,17 +184,11 @@ namespace bezpieczna_paczkaApp
         private void GameWindow_Load(object sender, EventArgs e)
         {
             LoadBackground();
-            gameMenu.BackColor = Color.FromArgb(100,0,0,0); // setting transparency mode for the in game menu
         }
 
         // function for loading background from the local directory ./graphics/
         private void LoadBackground()
         {
-            //string basePath = Application.StartupPath;
-            //string graphicsPath = Path.Combine(basePath, "graphics");
-            //string projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..","..")); // Go back three folders
-            //string graphicsPath = Path.Combine(projectRoot, "res", "graphics");
-
             try
             {
                 string backgroundPath = Path.Combine(graphicsPath, "tlo-startowe.png");
