@@ -14,9 +14,9 @@ namespace bezpieczna_paczkaApp
     public partial class LevelSelectControl : UserControl
     {
         // Event to notify the host form when a level is chosen
-        public event EventHandler<LevelSelectedEventArgs> LevelSelected;
+        public event EventHandler<LevelSelectedEventArgs>? LevelSelected;
         // Event to notify the host form that the user wants to go back to the main menu
-        public event EventHandler BackClicked;
+        public event EventHandler? BackClicked;
 
         // Define custom event arguments to pass the selected level ID (e.g., 1, 2, 3)
 
