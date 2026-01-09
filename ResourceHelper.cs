@@ -25,7 +25,7 @@ namespace bezpieczna_paczkaApp
         /// </summary>
         /// <param name="imagePath">Full path to image file</param>
         /// <returns>Loaded image or null if failed</returns>
-        public static Image LoadImageWithoutLock(string imagePath)
+        public static Image? LoadImageWithoutLock(string imagePath)
         {
             if (string.IsNullOrEmpty(imagePath) || !File.Exists(imagePath))
             {
@@ -99,7 +99,7 @@ namespace bezpieczna_paczkaApp
             // Dispose previous image
             DisposePictureBoxImage(pictureBox);
 
-            Image newImage = LoadImageWithoutLock(imagePath);
+            Image? newImage = LoadImageWithoutLock(imagePath);
 
             if (newImage != null)
             {
@@ -126,7 +126,7 @@ namespace bezpieczna_paczkaApp
             // Dispose previous image
             DisposePanelBackground(panel);
 
-            Image newImage = LoadImageWithoutLock(imagePath);
+            Image? newImage = LoadImageWithoutLock(imagePath);
 
             if (newImage != null)
             {
