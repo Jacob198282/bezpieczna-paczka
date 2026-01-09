@@ -19,8 +19,8 @@ namespace bezpieczna_paczkaApp
     public partial class GameMenuControl : UserControl
     {
         // Events to notify the parent container about user choices
-        public event EventHandler ResumeClicked;
-        public event EventHandler ExitToLevelSelectClicked;
+        public event EventHandler? ResumeClicked;
+        public event EventHandler? ExitToLevelSelectClicked;
 
         public string projectRoot; // path to the project
         public string graphicsPath; // path to folder with graphics
@@ -34,6 +34,10 @@ namespace bezpieczna_paczkaApp
 
             this.projectRoot = projectRoot;
             this.graphicsPath = graphicsPath;
+
+            picExit.BackColor = Color.Transparent;
+            picResume.BackColor = Color.Transparent;
+            picLevelSelect.BackColor = Color.Transparent;
         }
         private void picResume_Click(object sender, EventArgs e)
         {
