@@ -218,23 +218,17 @@ namespace bezpieczna_paczkaApp
                 // Load vehicle image
                 try
                 {
-                    if (picBox.Image != null)
-                    {
-                        picBox.Image.Dispose();
-                    }
+                    ResourceHelper.DisposePictureBoxImage(picBox);
 
                     picBox.Image = null;
-                    picBox.Image = Image.FromFile(imagePath);
+                    ResourceHelper.LoadPictureBoxImage(picBox, imagePath);
                     picBox.Refresh();
 
                 }
-                catch (FileNotFoundException ex) // If the file has not been found
-                {
-                    MessageBox.Show($"Błąd wczytywania grafiki: Nie znaleziono pliku!\n{ex.Message}", "Błąd Pliku");
-                    Application.Exit(); // Exit if graphics are missing
-                }
                 catch (Exception ex) // Other error
                 {
+                    System.Diagnostics.Debug.WriteLine($"Failed to load image: {ex.Message}");
+
                     MessageBox.Show($"Wystąpił nieoczekiwany błąd przy wczytywaniu grafiki:\n{ex.Message}", "Błąd Krytyczny");
                     Application.Exit();
                 }
@@ -256,12 +250,7 @@ namespace bezpieczna_paczkaApp
                 // Set cursor to default for locked vehicles
                 picBox.Cursor = Cursors.Default;
                 // If the image after reset is still active
-                if (picBox.Image != null)
-                {
-                    picBox.Image.Dispose();
-                    picBox.Image = null;
-                    picBox.Refresh();
-                }
+                ResourceHelper.DisposePictureBoxImage(picBox);
 
                 int threshold = PlayerProgress.GetVehicleThreshold(vehicleID);
                 // Method for setting conjugation of the word GWIAZDKA depending of the number of stars - currently working for numbers less than 12
@@ -294,22 +283,15 @@ namespace bezpieczna_paczkaApp
             try
             {
                 // Dispose previous image to free memory
-                if (pictureBox.Image != null)
-                {
-                    pictureBox.Image.Dispose();
-                    pictureBox.Image = null;
-                }
+                ResourceHelper.DisposePictureBoxImage(pictureBox);
 
                 // Load new image
-                pictureBox.Image = Image.FromFile(imagePath);
-            }
-            catch (FileNotFoundException ex) // If the file has not been found
-            {
-                MessageBox.Show($"Błąd wczytywania grafiki: Nie znaleziono pliku!\n{ex.Message}", "Błąd Pliku");
-                Application.Exit(); // Exit if graphics are missing
+                ResourceHelper.LoadPictureBoxImage(pictureBox, imagePath);
             }
             catch (Exception ex) // Other error
             {
+                System.Diagnostics.Debug.WriteLine($"Failed to load image: {ex.Message}");
+
                 MessageBox.Show($"Wystąpił nieoczekiwany błąd przy wczytywaniu grafiki:\n{ex.Message}", "Błąd Krytyczny");
                 Application.Exit();
             }
@@ -322,33 +304,33 @@ namespace bezpieczna_paczkaApp
             {
                 // Load the images for the Level Selection buttons
                 string level1Path = Path.Combine(graphicsPath, "poziom1.png");
-                picLevel1.Image = Image.FromFile(level1Path);
+                ResourceHelper.LoadPictureBoxImage(picLevel1, level1Path);
 
                 string level2Path = Path.Combine(graphicsPath, "poziom2.png");
-                picLevel2.Image = Image.FromFile(level2Path);
+                ResourceHelper.LoadPictureBoxImage(picLevel2, level2Path);
 
                 string level3Path = Path.Combine(graphicsPath, "poziom3.png");
-                picLevel3.Image = Image.FromFile(level3Path);
+                ResourceHelper.LoadPictureBoxImage(picLevel3, level3Path);
 
                 // Load the image for the Back Button
                 string backPath = Path.Combine(graphicsPath, "powrot.png");
-                picBack.Image = Image.FromFile(backPath);
+                ResourceHelper.LoadPictureBoxImage(picBack, backPath);
 
                 // Load image for the university logo
                 string uniPath = Path.Combine(graphicsPath, "pg_logo_czarne.png");
-                picUni.Image = Image.FromFile(uniPath);
+                ResourceHelper.LoadPictureBoxImage(picUni, uniPath);
 
                 // Load image for game logo
                 string logoPath = Path.Combine(graphicsPath, "bezpieczna-paczka-logo-nobg.png");
-                picLogo.Image = Image.FromFile(logoPath);
+                ResourceHelper.LoadPictureBoxImage(picLogo, logoPath);
 
                 // Load image for star image
                 string starPath = Path.Combine(graphicsPath, "stars", "star.png");
-                picStar.Image = Image.FromFile(starPath);
+                ResourceHelper.LoadPictureBoxImage(picStar, starPath);
 
                 // Load the image for the Reset button
                 string resetPath = Path.Combine(graphicsPath, "reset.png");
-                picReset.Image = Image.FromFile(resetPath);
+                ResourceHelper.LoadPictureBoxImage(picReset, resetPath);
             }
             catch (FileNotFoundException ex)
             {
