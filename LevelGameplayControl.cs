@@ -42,9 +42,9 @@ namespace bezpieczna_paczkaApp
         private const int MaxAnswerButtons = 4; // Maximum number of answer options supported in the UI
 
         // Font for the answer buttons, buttons and labels
-        public Font buttonFont = new Font("Gill Sans Ultra Bold", 20.25F, FontStyle.Italic, GraphicsUnit.Point, 238);
+        public Font buttonFont;
 
-        public Font answerFont = new Font("Gill Sans MT Condensed", 20F, FontStyle.Regular, GraphicsUnit.Point, 238);
+        public Font answerFont;
 
         public string projectRoot; // path to the project
         public string graphicsPath; // path to folder with graphics
@@ -75,6 +75,10 @@ namespace bezpieczna_paczkaApp
             scenarioPath = Path.Combine(graphicsPath, "scenario"); // Setting path to folder with scenario images
 
             _levelData = levelData;
+
+            // Initialize fonts
+            buttonFont = new Font("Gill Sans Ultra Bold", 20.25F, FontStyle.Italic, GraphicsUnit.Point, 238);
+            answerFont = new Font("Gill Sans MT Condensed", 20F, FontStyle.Regular, GraphicsUnit.Point, 238);
 
             currentVehicleID = PlayerProgress.GetCurrentVehicleID();
 
@@ -120,15 +124,13 @@ namespace bezpieczna_paczkaApp
 
             // Loading the tutorial image based on the level ID
             // Using naming convention 'znaki_poziom_{what level the player is playing}.png'
-            //string projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..", "..")); // Go back three folders
-            //string graphicsPath = Path.Combine(projectRoot, "res", "graphics");
             string tutorialImgName = $"znaki_poziom_{_levelData.LevelID}.png"; // Dynamic name using parameter of _levelData
             string fullPath = Path.Combine(graphicsPath, tutorialImgName);
 
-            if (File.Exists(fullPath))
-            {
-                picSignsTutorial.Image = Image.FromFile(fullPath);
-            }
+            // Dispose previous tutorial image if exists
+            ResourceHelper.DisposePictureBoxImage(picSignsTutorial);
+
+            ResourceHelper.LoadPictureBoxImage(picSignsTutorial, fullPath);
 
             // Showing the tutorial panel with the image
             pnlIntroStep2.Visible = true;
@@ -181,11 +183,7 @@ namespace bezpieczna_paczkaApp
         private void LoadScenarioImage(string scenarioID)
         {
             // Dispose previous image to free resources, if needed
-            if (pnlScenario.BackgroundImage != null)
-            {
-                pnlScenario.BackgroundImage.Dispose();
-                pnlScenario.BackgroundImage = null;
-            }
+            ResourceHelper.DisposePanelBackground(pnlScenario);
 
             if (string.IsNullOrWhiteSpace(scenarioID))
             {
@@ -197,16 +195,12 @@ namespace bezpieczna_paczkaApp
             {
                 // Getting the name for the folder depending on what level is actually on
                 string imagePath = BuildScenarioPath(scenarioID);
-                pnlScenario.BackgroundImage = Image.FromFile(imagePath);
-            }
-            catch (FileNotFoundException ex)
-            {
-                MessageBox.Show(
-                    $"Błąd wczytywania grafiki pytania: Nie znaleziono pliku!\n{ex.Message}",
-                    "Błąd Pliku");
+                ResourceHelper.LoadPanelBackground(pnlScenario, imagePath);
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"Failed to load image: {ex.Message}");
+
                 MessageBox.Show(
                     $"Wystąpił nieoczekiwany błąd przy wczytywaniu grafiki pytania:\n{ex.Message}",
                     "Błąd Krytyczny");
@@ -235,7 +229,7 @@ namespace bezpieczna_paczkaApp
         private void DisplayAnswerOptions(List<AnswerOption> options)
         {
             // Clear any existing controls in the answers panel
-            pnlAnswers.Controls.Clear();
+            CleanupAnswerButtons();
 
             int buttonsToCreate = options.Count; // check how many answers are for this question
 
@@ -244,8 +238,6 @@ namespace bezpieczna_paczkaApp
             {
                 buttonsToCreate = MaxAnswerButtons;
             }
-
-            
 
             foreach (AnswerOption option in options)
             {
@@ -503,30 +495,56 @@ namespace bezpieczna_paczkaApp
         {
             try
             {
+                // Dispose previous images before loading new ones
+                ResourceHelper.DisposePictureBoxImage(picMenu);
+                ResourceHelper.DisposePictureBoxImage(picLogo);
+                ResourceHelper.DisposePictureBoxImage(picUni);
+
                 // Load image for the menu button
                 string menuButtonPath = Path.Combine(graphicsPath, "menu.png");
-                picMenu.Image = Image.FromFile(menuButtonPath);
+                ResourceHelper.LoadPictureBoxImage(picMenu, menuButtonPath);
 
                 // Load image for the game logo
                 string logoPath = Path.Combine(graphicsPath, "bezpieczna-paczka-logo-nobg.png");
-                picLogo.Image = Image.FromFile(logoPath);
+                ResourceHelper.LoadPictureBoxImage(picLogo, logoPath);
 
                 // Load image for the university logo
                 string uniPath = Path.Combine(graphicsPath, "pg_logo_czarne.png");
-                picUni.Image = Image.FromFile(uniPath);
-            }
-            catch (FileNotFoundException ex)
-            {
-                MessageBox.Show(
-                    $"Błąd wczytywania grafiki przycisku menu: Nie znaleziono pliku!\n{ex.Message}",
-                    "Błąd Pliku");
+                ResourceHelper.LoadPictureBoxImage(picUni, uniPath);
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"Failed to load image: {ex.Message}");
+
                 MessageBox.Show(
                     $"Wystąpił nieoczekiwany błąd przy wczytywaniu grafiki przycisku menu:\n{ex.Message}",
                     "Błąd Krytyczny");
             }
+        }
+
+        /// <summary>
+        /// Removes event handlers and disposes all dynamically created answer buttons.
+        /// </summary>
+        private void CleanupAnswerButtons()
+        {
+            if (pnlAnswers == null)
+            {
+                return;
+            }
+
+            // Iterate through all controls and clean them up
+            foreach (Control ctrl in pnlAnswers.Controls)
+            {
+                if (ctrl is Button btn)
+                {
+                    // Remove event handler to prevent memory leak
+                    btn.Click -= HandleAnswerButtonClick;
+                    btn.Tag = null;
+                }
+            }
+
+            // Clear all controls from panel
+            pnlAnswers.Controls.Clear();
         }
     }
 

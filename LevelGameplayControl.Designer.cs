@@ -22,6 +22,36 @@
                     _questionTimer.Dispose();
                     _questionTimer = null;
                 }
+
+                // Dispose fonts
+                if (buttonFont != null)
+                {
+                    buttonFont.Dispose();
+                    buttonFont = null;
+                }
+
+                if (answerFont != null)
+                {
+                    answerFont.Dispose();
+                    answerFont = null;
+                }
+
+                // Dispose images in PictureBoxes
+                ResourceHelper.DisposePictureBoxImage(picMenu);
+                ResourceHelper.DisposePictureBoxImage(picLogo);
+                ResourceHelper.DisposePictureBoxImage(picUni);
+                ResourceHelper.DisposePictureBoxImage(picSignsTutorial);
+
+                // Dispose scenario background
+                if (pnlScenario != null && pnlScenario.BackgroundImage != null)
+                {
+                    pnlScenario.BackgroundImage.Dispose();
+                    pnlScenario.BackgroundImage = null;
+                }
+
+                // Clear answer buttons and their event handlers
+                CleanupAnswerButtons();
+
                 components.Dispose();
             }
             base.Dispose(disposing);
