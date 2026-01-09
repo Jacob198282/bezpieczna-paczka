@@ -46,7 +46,7 @@ namespace bezpieczna_paczkaApp
         public const int TotalVehiclesCount = 3;
 
         // Path to the progress save file
-        private static string _saveFilePath;
+        private static string? _saveFilePath; // It can be null
 
         // Currently selected vehicle ID (player's choice among unlocked vehicles)
         private static int _selectedVehicleID = 1;
