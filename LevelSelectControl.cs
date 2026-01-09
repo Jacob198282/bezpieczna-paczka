@@ -77,6 +77,7 @@ namespace bezpieczna_paczkaApp
             picLogo.BackColor = Color.Transparent;
             picUni.BackColor = Color.Transparent;
             picStar.BackColor = Color.Transparent;
+            picReset.BackColor = Color.Transparent;
             lblTotalStars.BackColor = Color.Transparent;
             tabVehicles.BackColor = Color.Transparent;
             UpdateStarsDisplay();
@@ -87,6 +88,72 @@ namespace bezpieczna_paczkaApp
         {
             // Notify GameWindow to switch back to Main Menu
             BackClicked?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Handles click on reset button. Clears all progress after confirmation.
+        /// </summary>
+        private void picReset_Click(object sender, EventArgs e)
+        {
+            // Ask for confirmation
+            DialogResult result = MessageBox.Show(
+                "Czy na pewno chcesz zresetowac postep gry?\nTa operacja jest nieodwracalna!",
+                "Potwierdzenie resetu",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning);
+
+            if (result == DialogResult.Yes)
+            {
+                // Clear all progress
+                PlayerProgress.ResetProgress();
+
+                // Refresh display
+                UpdateStarsDisplay();
+
+                MessageBox.Show(
+                    "Postep gry zostal zresetowany.",
+                    "Reset wykonany");
+            }
+        }
+
+        /// <summary>
+        /// Handles click on vehicle 1 picture.
+        /// </summary>
+        private void picVehicle1_Click(object sender, EventArgs e)
+        {
+            SelectVehicle(1);
+        }
+
+        /// <summary>
+        /// Handles click on vehicle 2 picture.
+        /// </summary>
+        private void picVehicle2_Click(object sender, EventArgs e)
+        {
+            SelectVehicle(2);
+        }
+
+        /// <summary>
+        /// Handles click on vehicle 3 picture.
+        /// </summary>
+        private void picVehicle3_Click(object sender, EventArgs e)
+        {
+            SelectVehicle(3);
+        }
+
+        /// <summary>
+        /// Attempts to select a vehicle. Only works if vehicle is unlocked.
+        /// </summary>
+        /// <param name="vehicleID">Vehicle ID to select</param>
+        private void SelectVehicle(int vehicleID)
+        {
+            // Try to set the vehicle as current
+            bool success = PlayerProgress.SetCurrentVehicleID(vehicleID);
+
+            if (success)
+            {
+                // Refresh display to show new active vehicle
+                UpdateVehiclesDisplay();
+            }
         }
 
         // Updates the visual display of total stars earned by the player.
@@ -135,28 +202,31 @@ namespace bezpieczna_paczkaApp
         private void SetVehicleDisplay(PictureBox picBox, Label lblStatus, int vehicleID, int currentVehicleID)
         {
             // Checking with the method of the PlayerProgress class if the vehicle is unlocked
-            bool isUnlocked = PlayerProgress.IsVehicleUnlocked(vehicleID); 
+            bool isUnlocked = PlayerProgress.IsVehicleUnlocked(vehicleID);
             bool isActive = (vehicleID == currentVehicleID); // If the active vehicle is the same as current, then it is true
 
             // Build image path
             string imageName = $"pojazd{vehicleID}.png"; // Name of the image of the vehicle
-            string imagePath = Path.Combine(graphicsPath, "vehicles" , imageName); // Path to the image of the vehicle
+            string imagePath = Path.Combine(graphicsPath, "vehicles", imageName); // Path to the image of the vehicle
 
             // Set status label
             if (isUnlocked)
             {
-                lblStatus.Text = "DOSTĘPNY";
-                lblStatus.ForeColor = Color.White;
+                // Set cursor to hand for clickable vehicles
+                picBox.Cursor = Cursors.Hand;
+
                 // Load vehicle image
                 try
                 {
                     if (picBox.Image != null)
                     {
                         picBox.Image.Dispose();
-                        picBox.Image = null;
                     }
 
+                    picBox.Image = null;
                     picBox.Image = Image.FromFile(imagePath);
+                    picBox.Refresh();
+
                 }
                 catch (FileNotFoundException ex) // If the file has not been found
                 {
@@ -169,21 +239,37 @@ namespace bezpieczna_paczkaApp
                     Application.Exit();
                 }
 
-                if(isActive)
+                // Set label under vehicle whether it is active or not
+                if (isActive)
                 {
                     lblStatus.Text = "AKTYWNY";
                     lblStatus.ForeColor = Color.Gold;
                 }
+                else
+                {
+                    lblStatus.Text = "DOSTĘPNY";
+                    lblStatus.ForeColor = Color.White;
+                }
             }
             else
             {
+                // Set cursor to default for locked vehicles
+                picBox.Cursor = Cursors.Default;
+                // If the image after reset is still active
+                if (picBox.Image != null)
+                {
+                    picBox.Image.Dispose();
+                    picBox.Image = null;
+                    picBox.Refresh();
+                }
+
                 int threshold = PlayerProgress.GetVehicleThreshold(vehicleID);
                 // Method for setting conjugation of the word GWIAZDKA depending of the number of stars - currently working for numbers less than 12
                 if (threshold > 4 || threshold == 0)
                 {
                     lblStatus.Text = $"{threshold} GWIAZDEK";
                 }
-                else if(threshold == 1)
+                else if (threshold == 1)
                 {
                     lblStatus.Text = $"{threshold} GWIAZDKA";
                 }
@@ -259,6 +345,10 @@ namespace bezpieczna_paczkaApp
                 // Load image for star image
                 string starPath = Path.Combine(graphicsPath, "stars", "star.png");
                 picStar.Image = Image.FromFile(starPath);
+
+                // Load the image for the Reset button
+                string resetPath = Path.Combine(graphicsPath, "reset.png");
+                picReset.Image = Image.FromFile(resetPath);
             }
             catch (FileNotFoundException ex)
             {

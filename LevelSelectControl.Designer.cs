@@ -47,6 +47,7 @@
             picVehicle2 = new PictureBox();
             lblVehicle1 = new Label();
             lblVehicles = new Label();
+            picReset = new PictureBox();
             ((System.ComponentModel.ISupportInitialize)picLevel1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picLevel2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picLevel3).BeginInit();
@@ -61,6 +62,7 @@
             tabVehicles.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picVehicle3).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picVehicle2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)picReset).BeginInit();
             SuspendLayout();
             // 
             // picLevel1
@@ -190,6 +192,7 @@
             picVehicle1.SizeMode = PictureBoxSizeMode.Zoom;
             picVehicle1.TabIndex = 18;
             picVehicle1.TabStop = false;
+            picVehicle1.Click += picVehicle1_Click;
             // 
             // tabVehicles
             // 
@@ -246,6 +249,7 @@
             picVehicle3.SizeMode = PictureBoxSizeMode.Zoom;
             picVehicle3.TabIndex = 20;
             picVehicle3.TabStop = false;
+            picVehicle3.Click += picVehicle3_Click;
             // 
             // picVehicle2
             // 
@@ -256,6 +260,7 @@
             picVehicle2.SizeMode = PictureBoxSizeMode.Zoom;
             picVehicle2.TabIndex = 19;
             picVehicle2.TabStop = false;
+            picVehicle2.Click += picVehicle2_Click;
             // 
             // lblVehicle1
             // 
@@ -283,11 +288,23 @@
             lblVehicles.Text = "TWOJE POJAZDY";
             lblVehicles.TextAlign = ContentAlignment.MiddleCenter;
             // 
+            // picReset
+            // 
+            picReset.Cursor = Cursors.Hand;
+            picReset.Location = new Point(1047, 949);
+            picReset.Name = "picReset";
+            picReset.Size = new Size(168, 50);
+            picReset.SizeMode = PictureBoxSizeMode.Zoom;
+            picReset.TabIndex = 20;
+            picReset.TabStop = false;
+            picReset.Click += picReset_Click;
+            // 
             // LevelSelectControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Transparent;
+            Controls.Add(picReset);
             Controls.Add(tabVehicles);
             Controls.Add(picStarsLvl3);
             Controls.Add(picStarsLvl2);
@@ -319,6 +336,7 @@
             tabVehicles.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)picVehicle3).EndInit();
             ((System.ComponentModel.ISupportInitialize)picVehicle2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)picReset).EndInit();
             ResumeLayout(false);
         }
 
@@ -342,5 +360,6 @@
         private Label lblVehicle2;
         private Label lblVehicle1;
         private Label lblVehicles;
+        private PictureBox picReset;
     }
 }
