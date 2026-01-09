@@ -34,8 +34,6 @@ namespace bezpieczna_paczkaApp
 
             this.projectRoot = projectRoot;
             this.graphicsPath = graphicsPath;
-
-            LoadGraphics();
         }
         private void picResume_Click(object sender, EventArgs e)
         {
@@ -55,38 +53,37 @@ namespace bezpieczna_paczkaApp
             Application.Exit();
         }
 
-
         private void LoadGraphics()
         {
-            //string projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..", "..")); // Go back three folders
-            //string graphicsPath = Path.Combine(projectRoot, "res", "graphics");
-
             try
             {
                 // Load image for the back button
                 string menuButtonPath = Path.Combine(graphicsPath, "powrot.png");
-                picResume.Image = Image.FromFile(menuButtonPath);
-
+                ResourceHelper.LoadPictureBoxImage(picResume, menuButtonPath);            
+                
                 // Load image for level select menu button
                 string logoPath = Path.Combine(graphicsPath, "wybierz-poziom.png");
-                picLevelSelect.Image = Image.FromFile(logoPath);
+                ResourceHelper.LoadPictureBoxImage(picLevelSelect, logoPath);
 
                 // Load image for the exit button
                 string uniPath = Path.Combine(graphicsPath, "wyjdz-z-gry.png");
-                picExit.Image = Image.FromFile(uniPath);
+                ResourceHelper.LoadPictureBoxImage(picExit, uniPath);
             }
-            catch (FileNotFoundException ex)
+            catch (Exception ex) // Other errors
             {
-                MessageBox.Show(
-                    $"Błąd wczytywania grafiki przycisku menu: Nie znaleziono pliku!\n{ex.Message}",
-                    "Błąd Pliku");
-            }
-            catch (Exception ex)
-            {
+                System.Diagnostics.Debug.WriteLine($"Failed to load image: {ex.Message}");
+
                 MessageBox.Show(
                     $"Wystąpił nieoczekiwany błąd przy wczytywaniu grafiki przycisku menu:\n{ex.Message}",
                     "Błąd Krytyczny");
             }
+        }
+
+        // Loading method for GameMenuControl User Control
+        private void GameMenuControl_Load(object sender, EventArgs e)
+        {
+            LoadGraphics();
+            BackColor = Color.FromArgb(70, 0, 0, 0); // Setting transparency mode for the in game menu
         }
     }
 }

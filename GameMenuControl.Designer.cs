@@ -79,6 +79,7 @@
             Controls.Add(picLevelSelect);
             Name = "GameMenuControl";
             Size = new Size(1280, 1024);
+            Load += GameMenuControl_Load;
             ((System.ComponentModel.ISupportInitialize)picLevelSelect).EndInit();
             ((System.ComponentModel.ISupportInitialize)picResume).EndInit();
             ((System.ComponentModel.ISupportInitialize)picExit).EndInit();
