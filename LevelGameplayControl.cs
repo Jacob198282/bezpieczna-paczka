@@ -44,7 +44,7 @@ namespace bezpieczna_paczkaApp
         // Font for the answer buttons, buttons and labels
         public Font buttonFont = new Font("Gill Sans Ultra Bold", 20.25F, FontStyle.Italic, GraphicsUnit.Point, 238);
 
-        public Font answerFont = new Font("Gill Sans MT Condensed", 18F, FontStyle.Regular, GraphicsUnit.Point, 238);
+        public Font answerFont = new Font("Gill Sans MT Condensed", 20F, FontStyle.Regular, GraphicsUnit.Point, 238);
 
         public string projectRoot; // path to the project
         public string graphicsPath; // path to folder with graphics
@@ -52,6 +52,15 @@ namespace bezpieczna_paczkaApp
 
         // ID of the vehicle used in current gameplay session
         public int currentVehicleID;
+
+        // Time limit for each question in seconds
+        private const int QUESTION_TIME_LIMIT = 30;
+
+        // Timer that counts down for each question
+        private System.Windows.Forms.Timer _questionTimer;
+
+        // Seconds remaining for current question
+        private int _secondsLeft;   
 
         public LevelGameplayControl(LevelData levelData, string projectRoot, string graphicsPath)
         {
@@ -163,6 +172,9 @@ namespace bezpieczna_paczkaApp
 
             // Update score label
             lblScore.Text = $"Dostarczono {_correctAnswersCount}";
+
+            // Start countdown timer for this question
+            StartTimer();
         }
 
         // Loads the scenario image from the given file path into the PictureBox
@@ -251,8 +263,6 @@ namespace bezpieczna_paczkaApp
                 btn.Margin = new Padding(0, 5, 0, 5); // Add spacing between buttons
                 btn.AutoSize = true; // 
                 btn.AutoSizeMode = AutoSizeMode.GrowOnly;
-                //btn.Anchor = AnchorStyles.Left;
-                //btn.Anchor = AnchorStyles.Right;
                 btn.Anchor = AnchorStyles.Top;
                 btn.Anchor = AnchorStyles.Bottom;
 
@@ -270,6 +280,9 @@ namespace bezpieczna_paczkaApp
         // Handles player's click on one of the answer picture boxes
         private void HandleAnswerButtonClick(object sender, EventArgs e)
         {
+            // Stop timer immediately when answer is clicked
+            StopTimer();
+
             Button clickedButton = (Button)sender; // Casting sender to a Button type to retrieve the attached AnswerOption
 
             if (clickedButton == null)
@@ -384,7 +397,105 @@ namespace bezpieczna_paczkaApp
         // Handles click on the "Menu" picture button to request opening the in-level menu
         private void picMenu_Click(object sender, EventArgs e)
         {
+            // Pause timer when opening menu
+            StopTimer();
+
             MenuRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Starts or restarts the countdown timer for current question.
+        /// </summary>
+        public void StartTimer()
+        {
+            // Initialize timer if not exists
+            if (_questionTimer == null)
+            {
+                _questionTimer = new System.Windows.Forms.Timer();
+                _questionTimer.Interval = 1000; // 1 second
+                _questionTimer.Tick += OnTimerTick;
+            }
+
+            // Reset countdown
+            _secondsLeft = QUESTION_TIME_LIMIT;
+            UpdateTimerDisplay();
+
+            // Start counting
+            _questionTimer.Start();
+        }
+
+        /// <summary>
+        /// Stops the countdown timer.
+        /// </summary>
+        public void StopTimer()
+        {
+            if (_questionTimer != null)
+            {
+                _questionTimer.Stop();
+            }
+        }
+
+        /// <summary>
+        /// Resumes the countdown timer without resetting time.
+        /// </summary>
+        public void ResumeTimer()
+        {
+            if (_questionTimer != null && _secondsLeft > 0)
+            {
+                _questionTimer.Start();
+            }
+        }
+
+        /// <summary>
+        /// Called every second by the timer. Updates display and handles timeout.
+        /// </summary>
+        private void OnTimerTick(object sender, EventArgs e)
+        {
+            _secondsLeft--;
+
+            if (_secondsLeft <= 0)
+            {
+                // Time expired - treat as wrong answer
+                OnTimeExpired();
+            }
+            else
+            {
+                UpdateTimerDisplay();
+            }
+        }
+
+        /// <summary>
+        /// Updates the timer label text and color based on remaining time.
+        /// </summary>
+        private void UpdateTimerDisplay()
+        {
+            lblTimer.Text = $"Czas: {_secondsLeft}s";
+
+            // Change color to red when less than 10 seconds
+            if (_secondsLeft <= 10)
+            {
+                lblTimer.ForeColor = Color.Red;
+            }
+            else
+            {
+                lblTimer.ForeColor = SystemColors.ControlLight;
+            }
+        }
+
+        /// <summary>
+        /// Called when time runs out. Treats as incorrect answer and moves to next question.
+        /// </summary>
+        private void OnTimeExpired()
+        {
+            StopTimer();
+
+            // Show timeout message
+            MessageBox.Show(
+                "Czas minął! Nie udzielono odpowiedzi.",
+                "Koniec czasu");
+
+            // Move to next question (no points awarded)
+            GoToNextQuestionOrFinish();
         }
 
         // Loads graphical assets required by the gameplay screen
@@ -403,10 +514,6 @@ namespace bezpieczna_paczkaApp
                 // Load image for the university logo
                 string uniPath = Path.Combine(graphicsPath, "pg_logo_czarne.png");
                 picUni.Image = Image.FromFile(uniPath);
-
-                // Load van image
-                string vanPath = Path.Combine(graphicsPath, "pojazd1.png");
-                picVan.Image = Image.FromFile(vanPath);
             }
             catch (FileNotFoundException ex)
             {

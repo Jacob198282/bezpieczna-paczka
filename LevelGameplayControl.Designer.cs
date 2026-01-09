@@ -15,6 +15,13 @@
         {
             if (disposing && (components != null))
             {
+                // Stop and dispose timer
+                if (_questionTimer != null)
+                {
+                    _questionTimer.Stop();
+                    _questionTimer.Dispose();
+                    _questionTimer = null;
+                }
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -35,7 +42,6 @@
             picMenu = new PictureBox();
             picLogo = new PictureBox();
             picUni = new PictureBox();
-            picVan = new PictureBox();
             pnlIntro = new Panel();
             pnlIntroStep2 = new Panel();
             btnStartGameplay = new Button();
@@ -45,15 +51,14 @@
             lblIntroDescription = new Label();
             lblIntroTitle = new Label();
             pnlScenario = new Panel();
+            lblTimer = new Label();
             ((System.ComponentModel.ISupportInitialize)picMenu).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picLogo).BeginInit();
             ((System.ComponentModel.ISupportInitialize)picUni).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)picVan).BeginInit();
             pnlIntro.SuspendLayout();
             pnlIntroStep2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picSignsTutorial).BeginInit();
             pnlIntroStep1.SuspendLayout();
-            pnlScenario.SuspendLayout();
             SuspendLayout();
             // 
             // lblQuestionText
@@ -134,17 +139,6 @@
             picUni.SizeMode = PictureBoxSizeMode.Zoom;
             picUni.TabIndex = 8;
             picUni.TabStop = false;
-            // 
-            // picVan
-            // 
-            picVan.BackColor = Color.Transparent;
-            picVan.Location = new Point(227, 290);
-            picVan.Name = "picVan";
-            picVan.Size = new Size(45, 150);
-            picVan.SizeMode = PictureBoxSizeMode.Zoom;
-            picVan.TabIndex = 9;
-            picVan.TabStop = false;
-            picVan.Visible = false;
             // 
             // pnlIntro
             // 
@@ -237,11 +231,21 @@
             // pnlScenario
             // 
             pnlScenario.BackgroundImageLayout = ImageLayout.Zoom;
-            pnlScenario.Controls.Add(picVan);
             pnlScenario.Location = new Point(260, 280);
             pnlScenario.Name = "pnlScenario";
             pnlScenario.Size = new Size(740, 740);
             pnlScenario.TabIndex = 2;
+            // 
+            // lblTimer
+            // 
+            lblTimer.BackColor = Color.Transparent;
+            lblTimer.Font = new Font("Gill Sans Ultra Bold", 21.75F, FontStyle.Italic, GraphicsUnit.Point, 238);
+            lblTimer.ForeColor = SystemColors.ControlLight;
+            lblTimer.Location = new Point(1010, 500);
+            lblTimer.Name = "lblTimer";
+            lblTimer.Size = new Size(189, 42);
+            lblTimer.TabIndex = 4;
+            lblTimer.Text = "Czas: 30s";
             // 
             // LevelGameplayControl
             // 
@@ -253,6 +257,7 @@
             Controls.Add(picLogo);
             Controls.Add(picUni);
             Controls.Add(picMenu);
+            Controls.Add(lblTimer);
             Controls.Add(lblProgress);
             Controls.Add(lblQuestionText);
             Controls.Add(lblScore);
@@ -262,12 +267,10 @@
             ((System.ComponentModel.ISupportInitialize)picMenu).EndInit();
             ((System.ComponentModel.ISupportInitialize)picLogo).EndInit();
             ((System.ComponentModel.ISupportInitialize)picUni).EndInit();
-            ((System.ComponentModel.ISupportInitialize)picVan).EndInit();
             pnlIntro.ResumeLayout(false);
             pnlIntroStep2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)picSignsTutorial).EndInit();
             pnlIntroStep1.ResumeLayout(false);
-            pnlScenario.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -279,7 +282,6 @@
         private PictureBox picMenu;
         private PictureBox picLogo;
         private PictureBox picUni;
-        private PictureBox picVan;
         private Panel pnlIntro;
         private Panel pnlIntroStep1;
         private Button btnNext;
@@ -289,5 +291,6 @@
         private Button btnStartGameplay;
         private PictureBox picSignsTutorial;
         private Panel pnlScenario;
+        private Label lblTimer;
     }
 }
