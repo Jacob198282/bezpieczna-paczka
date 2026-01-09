@@ -21,10 +21,10 @@ namespace bezpieczna_paczkaApp
     public partial class LevelGameplayControl : UserControl
     {
         // Event raised when the level is completed (all questions answered)
-        public event EventHandler<LevelCompletedEventArgs> LevelCompleted;
+        public event EventHandler<LevelCompletedEventArgs>? LevelCompleted;
 
         // Event raised when the player wants to open the in-level menu (pause/options)
-        public event EventHandler MenuRequested;
+        public event EventHandler? MenuRequested;
 
         // Data for the current level (title, intro, questions)
         private readonly LevelData _levelData;
@@ -57,10 +57,13 @@ namespace bezpieczna_paczkaApp
         private const int QUESTION_TIME_LIMIT = 30;
 
         // Timer that counts down for each question
-        private System.Windows.Forms.Timer _questionTimer;
+        private System.Windows.Forms.Timer? _questionTimer;
 
         // Seconds remaining for current question
-        private int _secondsLeft;   
+        private int _secondsLeft;
+
+        // Minigame control for package collection
+        private MiniGameControl? _minigame;
 
         public LevelGameplayControl(LevelData levelData, string projectRoot, string graphicsPath)
         {
@@ -117,7 +120,7 @@ namespace bezpieczna_paczkaApp
         /// <summary>
         /// Handler for the 'Next' button in the first part of the intro
         /// </summary>
-        private void btnNext_Click(object sender, EventArgs e)
+        private void btnNext_Click(object? sender, EventArgs e)
         {
             // Hiding the text panel
             pnlIntroStep1.Visible = false;
@@ -139,11 +142,12 @@ namespace bezpieczna_paczkaApp
         /// <summary>
         /// Handler for the final button that starts the actual game.
         /// </summary>
-        private void btnStartGameplay_Click(object sender, EventArgs e)
+        private void btnStartGameplay_Click(object? sender, EventArgs e)
         {
             // Hide the whole intro overlay
             pnlIntro.Visible = false;
-            LoadQuestion(_currentQuestionIndex);
+//            LoadQuestion(_currentQuestionIndex);
+            StartMinigame();
         }
 
         // Loads a single question by index and updates all UI elements accordingly
@@ -270,19 +274,39 @@ namespace bezpieczna_paczkaApp
         }
 
         // Handles player's click on one of the answer picture boxes
-        private void HandleAnswerButtonClick(object sender, EventArgs e)
+        private void HandleAnswerButtonClick(object? sender, EventArgs e)
         {
             // Stop timer immediately when answer is clicked
             StopTimer();
-
-            Button clickedButton = (Button)sender; // Casting sender to a Button type to retrieve the attached AnswerOption
-
-            if (clickedButton == null)
+            
+            Button clickedButton;
+            AnswerOption selectedOption;
+            
+            // Casting sender to a Button type to retrieve the attached AnswerOption
+            if (sender is Button senderButton)
+            {
+                clickedButton = senderButton;
+            }
+            else
             {
                 return;
             }
 
-            AnswerOption selectedOption = (AnswerOption)clickedButton.Tag; // Retrieving attached AnswerOption
+            // If clickedButton is null
+            if (clickedButton == null) 
+            {
+                return;
+            }
+
+            // Retrieving attached AnswerOption
+            if (clickedButton.Tag is AnswerOption clickedOption)
+            {
+                selectedOption = clickedOption;
+            }
+            else
+            {
+                return;
+            }
 
             if (selectedOption == null)
             {
@@ -387,12 +411,73 @@ namespace bezpieczna_paczkaApp
         }
 
         // Handles click on the "Menu" picture button to request opening the in-level menu
-        private void picMenu_Click(object sender, EventArgs e)
+        private void picMenu_Click(object? sender, EventArgs e)
         {
             // Pause timer when opening menu
             StopTimer();
 
             MenuRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Creates and starts the minigame.
+        /// </summary>
+        private void StartMinigame()
+        {
+            // Create minigame if not exists
+            if (_minigame == null)
+            {
+                _minigame = new MiniGameControl(graphicsPath);
+                _minigame.Dock = DockStyle.Fill;
+                _minigame.MinigameCompleted += OnMinigameCompleted;
+                _minigame.MenuRequested += OnMinigameMenuRequested;
+                Controls.Add(_minigame);
+            }
+
+            // Bring to front and start
+            _minigame.BringToFront();
+            _minigame.Visible = true;
+            _minigame.StartGame();
+        }
+
+        /// <summary>
+        /// Called when minigame is completed. Starts the Q&A phase.
+        /// </summary>
+        private void OnMinigameCompleted(object? sender, EventArgs e)
+        {
+            // Hide minigame
+            if (_minigame != null)
+            {
+                _minigame.Visible = false;
+            }
+
+            // Start questions
+            LoadQuestion(_currentQuestionIndex);
+        }
+
+        /// <summary>
+        /// Called when menu is requested from minigame.
+        /// </summary>
+        private void OnMinigameMenuRequested(object? sender, EventArgs e)
+        {
+            // Forward the menu request to GameWindow
+            MenuRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Cleans up minigame resources.
+        /// </summary>
+        private void CleanupMinigame()
+        {
+            if (_minigame != null)
+            {
+                _minigame.StopGame();
+                _minigame.MinigameCompleted -= OnMinigameCompleted;
+                _minigame.MenuRequested -= OnMinigameMenuRequested;
+                Controls.Remove(_minigame);
+                _minigame.Dispose();
+                _minigame = null;
+            }
         }
 
         /// <summary>
@@ -439,9 +524,24 @@ namespace bezpieczna_paczkaApp
         }
 
         /// <summary>
+        /// Resumes minigame if active, otherwise resumes question timer.
+        /// </summary>
+        public void ResumeMinigameOrTimer()
+        {
+            if (_minigame != null && _minigame.Visible)
+            {
+                _minigame.ResumeGame();
+            }
+            else
+            {
+                ResumeTimer();
+            }
+        }
+
+        /// <summary>
         /// Called every second by the timer. Updates display and handles timeout.
         /// </summary>
-        private void OnTimerTick(object sender, EventArgs e)
+        private void OnTimerTick(object? sender, EventArgs e)
         {
             _secondsLeft--;
 
@@ -499,6 +599,7 @@ namespace bezpieczna_paczkaApp
                 ResourceHelper.DisposePictureBoxImage(picMenu);
                 ResourceHelper.DisposePictureBoxImage(picLogo);
                 ResourceHelper.DisposePictureBoxImage(picUni);
+                ResourceHelper.DisposePictureBoxImage(picBoss);
 
                 // Load image for the menu button
                 string menuButtonPath = Path.Combine(graphicsPath, "menu.png");
@@ -511,6 +612,9 @@ namespace bezpieczna_paczkaApp
                 // Load image for the university logo
                 string uniPath = Path.Combine(graphicsPath, "pg_logo_czarne.png");
                 ResourceHelper.LoadPictureBoxImage(picUni, uniPath);
+
+                string bossPath = Path.Combine(graphicsPath, "szef.png");
+                ResourceHelper.LoadPictureBoxImage(picBoss, bossPath);
             }
             catch (Exception ex)
             {

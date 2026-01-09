@@ -23,6 +23,9 @@
                     _questionTimer = null;
                 }
 
+                // Cleanup minigame
+                CleanupMinigame();
+
                 // Dispose fonts
                 if (buttonFont != null)
                 {
@@ -41,6 +44,7 @@
                 ResourceHelper.DisposePictureBoxImage(picLogo);
                 ResourceHelper.DisposePictureBoxImage(picUni);
                 ResourceHelper.DisposePictureBoxImage(picSignsTutorial);
+                ResourceHelper.DisposePictureBoxImage(picBoss);
 
                 // Dispose scenario background
                 if (pnlScenario != null && pnlScenario.BackgroundImage != null)
@@ -77,6 +81,7 @@
             btnStartGameplay = new Button();
             picSignsTutorial = new PictureBox();
             pnlIntroStep1 = new Panel();
+            picBoss = new PictureBox();
             btnNext = new Button();
             lblIntroDescription = new Label();
             lblIntroTitle = new Label();
@@ -89,6 +94,7 @@
             pnlIntroStep2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picSignsTutorial).BeginInit();
             pnlIntroStep1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)picBoss).BeginInit();
             SuspendLayout();
             // 
             // lblQuestionText
@@ -142,7 +148,7 @@
             // 
             picMenu.BackColor = Color.Transparent;
             picMenu.Cursor = Cursors.Hand;
-            picMenu.Location = new Point(1070, 902);
+            picMenu.Location = new Point(1086, 902);
             picMenu.Name = "picMenu";
             picMenu.Size = new Size(168, 50);
             picMenu.SizeMode = PictureBoxSizeMode.Zoom;
@@ -182,7 +188,7 @@
             // 
             // pnlIntroStep2
             // 
-            pnlIntroStep2.BackColor = Color.Green;
+            pnlIntroStep2.BackColor = Color.FromArgb(40, 42, 41);
             pnlIntroStep2.Controls.Add(btnStartGameplay);
             pnlIntroStep2.Controls.Add(picSignsTutorial);
             pnlIntroStep2.Dock = DockStyle.Fill;
@@ -215,7 +221,8 @@
             // 
             // pnlIntroStep1
             // 
-            pnlIntroStep1.BackColor = Color.Green;
+            pnlIntroStep1.BackColor = Color.FromArgb(40, 42, 41);
+            pnlIntroStep1.Controls.Add(picBoss);
             pnlIntroStep1.Controls.Add(btnNext);
             pnlIntroStep1.Controls.Add(lblIntroDescription);
             pnlIntroStep1.Controls.Add(lblIntroTitle);
@@ -224,6 +231,15 @@
             pnlIntroStep1.Name = "pnlIntroStep1";
             pnlIntroStep1.Size = new Size(1280, 1024);
             pnlIntroStep1.TabIndex = 0;
+            // 
+            // picBoss
+            // 
+            picBoss.Location = new Point(20, 300);
+            picBoss.Name = "picBoss";
+            picBoss.Size = new Size(200, 500);
+            picBoss.SizeMode = PictureBoxSizeMode.Zoom;
+            picBoss.TabIndex = 2;
+            picBoss.TabStop = false;
             // 
             // btnNext
             // 
@@ -241,9 +257,9 @@
             // 
             lblIntroDescription.Font = new Font("Gill Sans Ultra Bold Condensed", 20.25F, FontStyle.Italic, GraphicsUnit.Point, 238);
             lblIntroDescription.ForeColor = SystemColors.ControlLight;
-            lblIntroDescription.Location = new Point(42, 100);
+            lblIntroDescription.Location = new Point(240, 100);
             lblIntroDescription.Name = "lblIntroDescription";
-            lblIntroDescription.Size = new Size(1196, 775);
+            lblIntroDescription.Size = new Size(1000, 775);
             lblIntroDescription.TabIndex = 1;
             lblIntroDescription.Text = "Zasady gry i wstęp";
             // 
@@ -281,7 +297,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.Green;
+            BackColor = Color.FromArgb(40, 42, 41);
             Controls.Add(pnlIntro);
             Controls.Add(pnlAnswers);
             Controls.Add(picLogo);
@@ -301,6 +317,7 @@
             pnlIntroStep2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)picSignsTutorial).EndInit();
             pnlIntroStep1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)picBoss).EndInit();
             ResumeLayout(false);
         }
 
@@ -322,5 +339,6 @@
         private PictureBox picSignsTutorial;
         private Panel pnlScenario;
         private Label lblTimer;
+        private PictureBox picBoss;
     }
 }
