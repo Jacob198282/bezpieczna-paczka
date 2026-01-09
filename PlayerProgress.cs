@@ -45,6 +45,12 @@ namespace bezpieczna_paczkaApp
         /// </summary>
         public const int TotalVehiclesCount = 3;
 
+        // Path to the progress save file
+        private static string _saveFilePath;
+
+        // Currently selected vehicle ID (player's choice among unlocked vehicles)
+        private static int _selectedVehicleID = 1;
+
 
         /// Dictionary storing the best star count achieved for each level
         private static readonly Dictionary<int, int> _starsPerLevel = new Dictionary<int, int>();
@@ -70,11 +76,136 @@ namespace bezpieczna_paczkaApp
             }
         }
 
+        /// <summary>
+        /// Sets the path where progress file will be saved.
+        /// Must be called before LoadProgress() or SaveProgress().
+        /// </summary>
+        /// <param name="projectRoot">Root path of the project</param>
+        public static void Initialize(string projectRoot)
+        {
+            string configPath = Path.Combine(projectRoot, "res", "config");
+
+            // Create config directory if it doesn't exist
+            if (!Directory.Exists(configPath))
+            {
+                Directory.CreateDirectory(configPath);
+            }
+
+            _saveFilePath = Path.Combine(configPath, "progress.txt");
+        }
+
+        /// <summary>
+        /// Saves current progress to file.
+        /// Format: one line per level as "level_X=Y" where X is level ID and Y is stars.
+        /// </summary>
+        public static void SaveProgress()
+        {
+            if (string.IsNullOrEmpty(_saveFilePath))
+            {
+                System.Diagnostics.Debug.WriteLine("SaveProgress: path not initialized");
+                return;
+            }
+
+            try
+            {
+                List<string> lines = new List<string>();
+
+                // Write each level's stars
+                foreach (var entry in _starsPerLevel)
+                {
+                    lines.Add($"level_{entry.Key}={entry.Value}");
+                }
+
+                // Write selected vehicle
+                lines.Add($"vehicle={_selectedVehicleID}");
+
+                File.WriteAllLines(_saveFilePath, lines);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to save progress: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Loads progress from file. If file doesn't exist, starts with empty progress.
+        /// </summary>
+        public static void LoadProgress()
+        {
+            if (string.IsNullOrEmpty(_saveFilePath))
+            {
+                System.Diagnostics.Debug.WriteLine("LoadProgress: path not initialized");
+                return;
+            }
+
+            // Clear existing data
+            _starsPerLevel.Clear();
+            _selectedVehicleID = 1;
+
+            // If no save file, start fresh
+            if (!File.Exists(_saveFilePath))
+            {
+                return;
+            }
+
+            try
+            {
+                string[] lines = File.ReadAllLines(_saveFilePath);
+
+                foreach (string line in lines)
+                {
+                    // Parse format: "level_X=Y"
+                    if (string.IsNullOrWhiteSpace(line))
+                    {
+                        continue;
+                    }
+
+                    string[] parts = line.Split('=');
+                    if (parts.Length != 2)
+                    {
+                        continue;
+                    }
+
+                    // Extract level ID from "level_X"
+                    string keyPart = parts[0].Trim();
+                    string valuePart = parts[1].Trim();
+
+                    if (keyPart.StartsWith("level_"))
+                    {
+                        string idString = keyPart.Substring(6); // Remove "level_" prefix
+                        if (int.TryParse(idString, out int levelId) &&
+                            int.TryParse(valuePart, out int stars))
+                        {
+                            _starsPerLevel[levelId] = Math.Clamp(stars, 0, MaxStarsPerLevel);
+                        }
+                    }
+                    else if (keyPart == "vehicle")
+                    {
+                        if (int.TryParse(valuePart, out int vehicleID))
+                        {
+                            _selectedVehicleID = Math.Clamp(vehicleID, 1, TotalVehiclesCount);
+                        }
+                    }
+                    else
+                    { 
+                        continue; 
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to load progress: {ex.Message}");
+            }
+        }
+
         /// Clears all saved progress, resetting the game to initial state
         /// Useful for implementing a "New Game" or "Reset Progress" feature
         public static void ResetProgress()
         {
             _starsPerLevel.Clear();
+            _selectedVehicleID = 1;
+
+            SaveProgress();
         }
 
         /// Retrieves the number of stars earned for a specific level
@@ -120,6 +251,12 @@ namespace bezpieczna_paczkaApp
         /// <returns>Vehicle ID (1, 2, or 3)</returns>
         public static int GetCurrentVehicleID()
         {
+            // Check if selected vehicle is still unlocked
+            if (IsVehicleUnlocked(_selectedVehicleID))
+            {
+                return _selectedVehicleID;
+            }
+
             int totalStars = GetTotalStars();
 
             if (totalStars >= VEHICLE_3_THRESHOLD)
@@ -134,6 +271,24 @@ namespace bezpieczna_paczkaApp
             {
                 return 1;
             }
+        }
+
+        /// <summary>
+        /// Sets the currently selected vehicle if it is unlocked.
+        /// </summary>
+        /// <param name="vehicleID">Vehicle ID to select (1, 2, or 3)</param>
+        /// <returns>True if vehicle was selected, false if locked</returns>
+        public static bool SetCurrentVehicleID(int vehicleID)
+        {
+            // Only allow selecting unlocked vehicles
+            if (!IsVehicleUnlocked(vehicleID))
+            {
+                return false;
+            }
+
+            _selectedVehicleID = vehicleID;
+            SaveProgress();
+            return true;
         }
 
         /// <summary>
