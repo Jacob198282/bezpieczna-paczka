@@ -52,35 +52,28 @@ namespace bezpieczna_paczkaApp
 
         private void LoadGraphics()
         {
-            //string projectRoot = Path.GetFullPath(Path.Combine(Application.StartupPath, "..", "..","..")); // Go back three folders
-            //string graphicsPath = Path.Combine(projectRoot, "res", "graphics");
-
             try
             {
                 // Load the image for the Select Level button
                 string selectLevelPath = Path.Combine(graphicsPath, "wybierz-poziom.png");
-                picSelectLevel.Image = Image.FromFile(selectLevelPath);
+                ResourceHelper.LoadPictureBoxImage(picSelectLevel, selectLevelPath);
 
                 // Load the image for the logo
                 string logoPath = Path.Combine(graphicsPath, "bezpieczna-paczka-logo-nobg.png");
-                picLogo.Image = Image.FromFile(logoPath);
+                ResourceHelper.LoadPictureBoxImage(picLogo, logoPath);
 
                 // Load the image for the Exit Button
                 string exitPath = Path.Combine(graphicsPath, "wyjdz-z-gry.png");
-                picExitGame.Image = Image.FromFile(exitPath);
+                ResourceHelper.LoadPictureBoxImage(picExitGame, exitPath);
 
                 // Load image for the university logo
                 string uniPath = Path.Combine(graphicsPath, "pg_logo_czarne.png");
-                picUni.Image = Image.FromFile(uniPath);
-            }
-            catch (FileNotFoundException ex)
-            {
-                // If a file is missing, show a helpful error message instead of crashing
-                MessageBox.Show($"Błąd wczytywania grafiki: Nie znaleziono pliku!\n{ex.Message}", "Błąd Pliku");
-                Application.Exit(); // Exit if graphics are missing
+                ResourceHelper.LoadPictureBoxImage(picUni, uniPath);
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"Failed to load image: {ex.Message}");
+                
                 // Catch other potential errors (e.g., file is not an image)
                 MessageBox.Show($"Wystąpił nieoczekiwany błąd przy wczytywaniu grafiki:\n{ex.Message}", "Błąd Krytyczny");
                 Application.Exit();
