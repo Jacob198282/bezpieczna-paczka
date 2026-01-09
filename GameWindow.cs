@@ -20,7 +20,7 @@ namespace bezpieczna_paczkaApp
         private MainMenuControl mainMenu;
         private LevelSelectControl levelSelect;
         private GameMenuControl gameMenu;
-        private LevelGameplayControl currentGameplay;
+        private LevelGameplayControl? currentGameplay; // Nullable - it can not exist
         public string projectRoot; // path to the project
         public string graphicsPath; // path to folder with graphics
 
@@ -89,13 +89,13 @@ namespace bezpieczna_paczkaApp
 
         /// Handler for the event raised by MainMenuControl when 'Select Level' is clicked
 
-        private void HandleSelectLevelClicked(object sender, EventArgs e)
+        private void HandleSelectLevelClicked(object? sender, EventArgs e)
         {
             SwitchUserControl(mainMenu, levelSelect); // switch controls
         }
 
         /// Handler for the event raised by LevelSelectControl when 'Back' is clicked
-        private void HandleBackClicked(object sender, EventArgs e)
+        private void HandleBackClicked(object? sender, EventArgs e)
         {
             // Call the existing method to switch back to the main menu view
             SwitchUserControl(levelSelect, mainMenu); // switch controls
@@ -103,7 +103,7 @@ namespace bezpieczna_paczkaApp
 
         /// Handler for the event raised by LevelSelectControl when a level is chosen
 
-        private void HandleLevelSelected(object sender, LevelSelectControl.LevelSelectedEventArgs e)
+        private void HandleLevelSelected(object? sender, LevelSelectControl.LevelSelectedEventArgs e)
         {
             CleanupCurrentGameplay();
 
@@ -126,14 +126,14 @@ namespace bezpieczna_paczkaApp
         /// <summary>
         /// Handler for menu button being clicked during gameplay
         /// </summary>
-        private void HandleMenuClicked(object sender, EventArgs e)
+        private void HandleMenuClicked(object? sender, EventArgs e)
         {
             gameMenu.BringToFront();
             gameMenu.Visible = true;
         }
 
         /// Handles the event raised when a player completes all questions in a level
-        private void HandleLevelCompleted(object sender, LevelCompletedEventArgs e)
+        private void HandleLevelCompleted(object? sender, LevelCompletedEventArgs e)
         {
             // Setting best score of the level
             PlayerProgress.SetStars(e.LevelID, e.StarsEarned);
@@ -170,7 +170,15 @@ namespace bezpieczna_paczkaApp
 
             CleanupCurrentGameplay();
 
-            SwitchUserControl((UserControl)sender, levelSelect);
+            // Cast sender to UserControl if not null
+            if (sender is UserControl senderControl)
+            {
+                SwitchUserControl(senderControl, levelSelect);
+            }
+            else
+            {
+                levelSelect.Visible = true;
+            }
         }
 
         /// <summary>
@@ -197,7 +205,7 @@ namespace bezpieczna_paczkaApp
         }
 
         /// Handler for exiting the game and entering select level menu
-        private void HandleExitToLevelSelect(object sender, EventArgs e)
+        private void HandleExitToLevelSelect(object? sender, EventArgs e)
         {
             gameMenu.Visible = false;
 
@@ -210,19 +218,19 @@ namespace bezpieczna_paczkaApp
         }
 
         /// Handler for back button in the in-game menu
-        private void HandleResumeClicked(object sender, EventArgs e)
+        private void HandleResumeClicked(object? sender, EventArgs e)
         {
             gameMenu.Visible = false;
 
             // Resume timer in current gameplay
             if (currentGameplay != null)
             {
-                currentGameplay.ResumeTimer();
+                currentGameplay.ResumeMinigameOrTimer();
             }
         }
 
         // Function for loading stuff for the GameWindow
-        private void GameWindow_Load(object sender, EventArgs e)
+        private void GameWindow_Load(object? sender, EventArgs e)
         {
             LoadBackground();
         }
