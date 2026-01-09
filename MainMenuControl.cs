@@ -13,7 +13,7 @@ namespace bezpieczna_paczkaApp
     public partial class MainMenuControl : UserControl
     {
         // Public event to notify the host form (GameWindow) when the level selection button is clicked
-        public event EventHandler SelectLevelClicked;
+        public event EventHandler? SelectLevelClicked;
 
         public string projectRoot; // path to the project
         public string graphicsPath; // path to folder with graphics
