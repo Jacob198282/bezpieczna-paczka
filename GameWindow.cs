@@ -20,6 +20,7 @@ namespace bezpieczna_paczkaApp
         private MainMenuControl mainMenu;
         private LevelSelectControl levelSelect;
         private GameMenuControl gameMenu;
+        private LevelGameplayControl currentGameplay;
         public string projectRoot; // path to the project
         public string graphicsPath; // path to folder with graphics
 
@@ -52,6 +53,9 @@ namespace bezpieczna_paczkaApp
             mainMenu.Visible = true; // At first this user control must be visible
             levelSelect.Visible = false;
             gameMenu.Visible = false;
+
+            PlayerProgress.Initialize(projectRoot);
+            PlayerProgress.LoadProgress();
         }
         protected override CreateParams CreateParams
         {
@@ -101,20 +105,22 @@ namespace bezpieczna_paczkaApp
 
         private void HandleLevelSelected(object sender, LevelSelectControl.LevelSelectedEventArgs e)
         {
+            CleanupCurrentGameplay();
+
             // Get the pre-loaded level data from the provider
             LevelData data = LevelProvider.GetLevel(e.LevelId);
 
             // Create the gameplay control with this data
-            LevelGameplayControl gameplay = new LevelGameplayControl(data, projectRoot, graphicsPath);
+            currentGameplay = new LevelGameplayControl(data, projectRoot, graphicsPath);
 
-            gameplay.MenuRequested += HandleMenuClicked;
-            gameplay.LevelCompleted += HandleLevelCompleted;
+            currentGameplay.MenuRequested += HandleMenuClicked;
+            currentGameplay.LevelCompleted += HandleLevelCompleted;
 
             // Setup controls that will be visible during the game
-            SetupControl(gameplay);
+            SetupControl(currentGameplay);
 
             // Switch the view
-            SwitchUserControl(levelSelect, gameplay);
+            SwitchUserControl(levelSelect, currentGameplay);
         }
 
         /// <summary>
@@ -132,6 +138,8 @@ namespace bezpieczna_paczkaApp
             // Setting best score of the level
             PlayerProgress.SetStars(e.LevelID, e.StarsEarned);
 
+            PlayerProgress.SaveProgress();
+
             string resultMessage;
             string messageTitle;
 
@@ -140,7 +148,7 @@ namespace bezpieczna_paczkaApp
                 // player passed
                 resultMessage = $"Gratulacje! Ukonczyles poziom!\n\n" +
                                $"Poprawne odpowiedzi: {e.CorrectAnswersCount}/{e.TotalQuestionsCount}\n" +
-                               $"Zdobyte gwiazdki: {e.StarsEarned}/{PlayerProgress.MaxStarsPerLevel - e.StarsEarned}";
+                               $"Zdobyte gwiazdki: {e.StarsEarned}/{PlayerProgress.MaxStarsPerLevel}";
 
                 messageTitle = "Poziom ukonczony!";
             }
@@ -160,14 +168,41 @@ namespace bezpieczna_paczkaApp
             // This ensures the total stars display is current when player returns
             levelSelect.UpdateStarsDisplay();
 
+            CleanupCurrentGameplay();
+
             SwitchUserControl((UserControl)sender, levelSelect);
+        }
+
+        /// <summary>
+        /// Removes and disposes the current gameplay control if it exists.
+        /// </summary>
+        private void CleanupCurrentGameplay()
+        {
+            if (currentGameplay != null)
+            {
+                // Stop timer before disposal
+                currentGameplay.StopTimer();
+
+                // Remove event handlers to prevent memory leaks
+                currentGameplay.MenuRequested -= HandleMenuClicked;
+                currentGameplay.LevelCompleted -= HandleLevelCompleted;
+
+                // Remove from container
+                pnlContainer.Controls.Remove(currentGameplay);
+
+                // Dispose resources
+                currentGameplay.Dispose();
+                currentGameplay = null;
+            }
         }
 
         /// Handler for exiting the game and entering select level menu
         private void HandleExitToLevelSelect(object sender, EventArgs e)
         {
             gameMenu.Visible = false;
-            // Find the current gameplay control in the container and switch from it
+
+            CleanupCurrentGameplay();
+
             if (gameMenu != null)
             {
                 SwitchUserControl(gameMenu, levelSelect);
@@ -178,6 +213,12 @@ namespace bezpieczna_paczkaApp
         private void HandleResumeClicked(object sender, EventArgs e)
         {
             gameMenu.Visible = false;
+
+            // Resume timer in current gameplay
+            if (currentGameplay != null)
+            {
+                currentGameplay.ResumeTimer();
+            }
         }
 
         // Function for loading stuff for the GameWindow
