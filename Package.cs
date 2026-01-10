@@ -18,21 +18,31 @@ namespace bezpieczna_paczkaApp
     /// </summary>
     public class Package
     {
-        // Position of the package (top-left corner)
+        /// <summary>
+        /// Position of the package (top-left corner)
+        /// </summary>
         public float X { get; set; }
         public float Y { get; set; }
 
-        // Size of the package
+        /// <summary>
+        /// Size of the package
+        /// </summary>
         public int Width { get; set; }
         public int Height { get; set; }
 
-        // Falling speed in pixels per frame
+        /// <summary>
+        /// Falling speed in pixels per frame
+        /// </summary>
         public float Speed { get; set; }
 
-        // Flag indicating if package was collected
+        /// <summary>
+        /// Flag indicating if package was collected
+        /// </summary>
         public bool IsCollected { get; set; }
 
-        // Flag indicating if package left the screen
+        /// <summary>
+        /// Flag indicating if package left the screen
+        /// </summary>
         public bool IsOffScreen { get; set; }
 
         /// <summary>

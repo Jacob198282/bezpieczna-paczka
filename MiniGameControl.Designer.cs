@@ -19,20 +19,20 @@ namespace bezpieczna_paczkaApp
             {
                 StopGame();
 
-                if (_gameTimer != null)
+                if (gameTimer != null)
                 {
-                    _gameTimer.Dispose();
-                    _gameTimer = null;
+                    gameTimer.Dispose();
+                    gameTimer = null;
                 }
 
-                if (_spawnTimer != null)
+                if (spawnTimer != null)
                 {
-                    _spawnTimer.Dispose();
-                    _spawnTimer = null;
+                    spawnTimer.Dispose();
+                    spawnTimer = null;
                 }
 
                 DisposeImages();
-                _packages.Clear();
+                packages.Clear();
 
                 components.Dispose();
             }
@@ -55,11 +55,11 @@ namespace bezpieczna_paczkaApp
             // lblScore
             // 
             lblScore.BackColor = Color.Transparent;
-            lblScore.Font = new Font("Gill Sans Ultra Bold Condensed", 27.75F, FontStyle.Italic, GraphicsUnit.Point, 238);
+            lblScore.Font = new Font("Gill Sans Ultra Bold", 36F, FontStyle.Italic, GraphicsUnit.Point, 238);
             lblScore.ForeColor = Color.Gold;
-            lblScore.Location = new Point(490, 15);
+            lblScore.Location = new Point(370, 15);
             lblScore.Name = "lblScore";
-            lblScore.Size = new Size(300, 47);
+            lblScore.Size = new Size(540, 61);
             lblScore.TabIndex = 0;
             lblScore.Text = "ZEBRANO: 10/10";
             // 
