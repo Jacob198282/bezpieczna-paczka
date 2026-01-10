@@ -10,23 +10,45 @@ using System.Windows.Forms;
 
 namespace bezpieczna_paczkaApp
 {
-    // UserControl for the level selection screen
+    /// <summary>
+    /// UserControl for the level selection screen
+    /// </summary>
     public partial class LevelSelectControl : UserControl
     {
-        // Event to notify the host form when a level is chosen
+        /// <summary>
+        /// Event to notify the host form when a level is chosen
+        /// </summary>
         public event EventHandler<LevelSelectedEventArgs>? LevelSelected;
-        // Event to notify the host form that the user wants to go back to the main menu
+        /// <summary>
+        /// Event to notify the host form that the user wants to go back to the main menu
+        /// </summary>
         public event EventHandler? BackClicked;
 
-        // Define custom event arguments to pass the selected level ID (e.g., 1, 2, 3)
+        /// <summary>
+        /// path to the project
+        /// </summary>
+        public string projectRoot;
+        /// <summary>
+        /// path to folder with graphics
+        /// </summary>
+        public string graphicsPath; 
 
-        public string projectRoot; // path to the project
-        public string graphicsPath; // path to folder with graphics
+        /// <summary>
+        /// Define custom event arguments to pass the selected level ID (e.g., 1, 2, 3)
+        /// </summary>
         public class LevelSelectedEventArgs : EventArgs
         {
+            /// <summary>
+            /// ID of level that is being chosen
+            /// </summary>
             public int LevelId { get; set; }
         }
 
+        /// <summary>
+        /// LevelSelectControl constructor
+        /// </summary>
+        /// <param name="projectRoot">File Path used for loading graphics to the project root</param>
+        /// <param name="graphicsPath">Combined root path and graphics folder used for loading graphics</param>
         public LevelSelectControl(string projectRoot, string graphicsPath)
         {
             InitializeComponent();
@@ -35,26 +57,59 @@ namespace bezpieczna_paczkaApp
             this.graphicsPath = graphicsPath;
         }
 
-        // Event handler for level 1 button
+        /// <summary>
+        /// Event handler for level 1 button
+        /// </summary>
+        /// <param name="sender">PictureBox as Level 1 button</param>
+        /// <param name="e">Event arguments</param>
         private void picLevel1_Click(object sender, EventArgs e)
         {
             // Pass the chosen level ID
-            LevelSelected?.Invoke(this, new LevelSelectedEventArgs { LevelId = 1 });
+            if (PlayerProgress.IsLevelUnlocked(1))
+            {
+                LevelSelected?.Invoke(this, new LevelSelectedEventArgs { LevelId = 1 });
+            }
         }
 
-        // Event handler for level 2 button
+        /// <summary>
+        /// Event handler for level 2 button
+        /// </summary>
+        /// <param name="sender">PictureBox as Level 2 button</param>
+        /// <param name="e">Event arguments</param>
         private void picLevel2_Click(object sender, EventArgs e)
         {
-            LevelSelected?.Invoke(this, new LevelSelectedEventArgs { LevelId = 2 });
+            if (PlayerProgress.IsLevelUnlocked(2))
+            {
+                LevelSelected?.Invoke(this, new LevelSelectedEventArgs { LevelId = 2 });
+            }
+            else
+            {
+                MessageBox.Show("Najpierw ukończ Poziom 1!", "Poziom zablokowany");
+            }
         }
 
-        // Event handler for level 3 button
+        /// <summary>
+        /// Event handler for level 3 button
+        /// </summary>
+        /// <param name="sender">PictureBox as Level 3 button</param>
+        /// <param name="e">Event arguments</param>
         private void picLevel3_Click(object sender, EventArgs e)
         {
-            LevelSelected?.Invoke(this, new LevelSelectedEventArgs { LevelId = 3 });
+            if (PlayerProgress.IsLevelUnlocked(3))
+            {
+                LevelSelected?.Invoke(this, new LevelSelectedEventArgs { LevelId = 3 });
+            }
+            else
+            {
+                MessageBox.Show("Najpierw ukończ Poziom 2!", "Poziom zablokowany");
+            }
         }
 
-        // Loading method for this UserControl
+        /// <summary>
+        /// Loading method for this UserControl
+        /// </summary>
+        /// <param name="sender">LevelSelectControl object</param>
+        /// <param name="e">Event arguments</param>
         private void LevelSelectControl_Load(object sender, EventArgs e)
         {
             LoadGraphics(); // Loads images for this UserControl
@@ -83,7 +138,11 @@ namespace bezpieczna_paczkaApp
             UpdateStarsDisplay();
         }
 
-        // Handles the Click event for the 'Back' picture button
+        /// <summary>
+        /// Handles the Click event for the 'Back' picture button
+        /// </summary>
+        /// <param name="sender">PictureBox as a back button</param>
+        /// <param name="e">Event arguments</param>
         private void picBack_Click(object sender, EventArgs e)
         {
             // Notify GameWindow to switch back to Main Menu
@@ -93,11 +152,13 @@ namespace bezpieczna_paczkaApp
         /// <summary>
         /// Handles click on reset button. Clears all progress after confirmation.
         /// </summary>
+        /// <param name="sender">PictureBox as a reset button</param>
+        /// <param name="e">Event arguments</param>
         private void picReset_Click(object sender, EventArgs e)
         {
             // Ask for confirmation
             DialogResult result = MessageBox.Show(
-                "Czy na pewno chcesz zresetowac postep gry?\nTa operacja jest nieodwracalna!",
+                "Czy na pewno chcesz zresetować postęp gry?\nTa operacja jest nieodwracalna!",
                 "Potwierdzenie resetu",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Warning);
@@ -111,7 +172,7 @@ namespace bezpieczna_paczkaApp
                 UpdateStarsDisplay();
 
                 MessageBox.Show(
-                    "Postep gry zostal zresetowany.",
+                    "Postęp gry został zresetowany.",
                     "Reset wykonany");
             }
         }
@@ -119,6 +180,8 @@ namespace bezpieczna_paczkaApp
         /// <summary>
         /// Handles click on vehicle 1 picture.
         /// </summary>
+        /// <param name="sender">PictureBox with 1st vehicle</param>
+        /// <param name="e">Event arguments</param>
         private void picVehicle1_Click(object sender, EventArgs e)
         {
             SelectVehicle(1);
@@ -127,6 +190,8 @@ namespace bezpieczna_paczkaApp
         /// <summary>
         /// Handles click on vehicle 2 picture.
         /// </summary>
+        /// <param name="sender">PictureBox with 2nd vehicle</param>
+        /// <param name="e">Event arguments</param>
         private void picVehicle2_Click(object sender, EventArgs e)
         {
             SelectVehicle(2);
@@ -135,6 +200,8 @@ namespace bezpieczna_paczkaApp
         /// <summary>
         /// Handles click on vehicle 3 picture.
         /// </summary>
+        /// <param name="sender">PictureBox with 3rd vehicle</param>
+        /// <param name="e">Event arguments</param>
         private void picVehicle3_Click(object sender, EventArgs e)
         {
             SelectVehicle(3);
@@ -156,7 +223,9 @@ namespace bezpieczna_paczkaApp
             }
         }
 
-        // Updates the visual display of total stars earned by the player.
+        /// <summary>
+        /// Updates the visual display of total stars earned by the player.
+        /// </summary>
         public void UpdateStarsDisplay()
         {
             // Retrieve current progress from the static PlayerProgress class
@@ -171,9 +240,14 @@ namespace bezpieczna_paczkaApp
 
             // Update PictureBoxes of the vehicles
             UpdateVehiclesDisplay();
+
+            // Update level buttons (locked/unlocked)
+            UpdateLevelButtonsDisplay();
         }
 
-        // Updates star images for each level based on player's saved progress.
+        /// <summary>
+        /// Updates star images for each level based on player's saved progress.
+        /// </summary>
         private void UpdateLevelStarsImages()
         {
             // Update stars image for each level (1, 2, 3)
@@ -182,7 +256,9 @@ namespace bezpieczna_paczkaApp
             SetStarsImage(picStarsLvl3, PlayerProgress.GetStars(3));
         }
 
-        // Updates display of all vehicles based on player progress.
+        /// <summary>
+        /// Updates display of all vehicles based on player progress.
+        /// </summary>
         private void UpdateVehiclesDisplay()
         {
             int currentVehicleID = PlayerProgress.GetCurrentVehicleID();
@@ -198,7 +274,7 @@ namespace bezpieczna_paczkaApp
         /// <param name="picBox">PictureBox to update</param>
         /// <param name="lblStatus">Status label to update</param>
         /// <param name="vehicleID">Vehicle ID (1, 2, or 3)</param>
-        /// <param name="currentVehicleId">Currently active vehicle ID</param>
+        /// <param name="currentVehicleID">Currently active vehicle ID</param>
         private void SetVehicleDisplay(PictureBox picBox, Label lblStatus, int vehicleID, int currentVehicleID)
         {
             // Checking with the method of the PlayerProgress class if the vehicle is unlocked
@@ -270,7 +346,11 @@ namespace bezpieczna_paczkaApp
             }
         }
 
-        // Loads the appropriate star image into a PictureBox based on star count.
+        /// <summary>
+        /// Loads the appropriate star image into a PictureBox based on star count.
+        /// </summary>
+        /// <param name="pictureBox">PictureBox that displays star images</param>
+        /// <param name="starCount">Used to load proper image according to the number of the stars collected by the player</param>
         private void SetStarsImage(PictureBox pictureBox, int starCount)
         {
             // Clamp value to valid range - in case the provided value is invalid
@@ -297,21 +377,46 @@ namespace bezpieczna_paczkaApp
             }
         }
 
-        // Method for loading graphics
+        /// <summary>
+        /// Updates the visual state of level buttons based on unlock status.
+        /// </summary>
+        private void UpdateLevelButtonsDisplay()
+        {
+            SetLevelButtonDisplay(picLevel1, 1);
+            SetLevelButtonDisplay(picLevel2, 2);
+            SetLevelButtonDisplay(picLevel3, 3);
+        }
+
+        /// <summary>
+        /// Sets the visual state of a single level button.
+        /// </summary>
+        /// <param name="picBox">PictureBox to update</param>
+        /// <param name="levelID">Level ID (1, 2, or 3)</param>
+        private void SetLevelButtonDisplay(PictureBox picBox, int levelID)
+        {
+            bool isUnlocked = PlayerProgress.IsLevelUnlocked(levelID);
+
+            // Load normal image
+            string imagePath = Path.Combine(graphicsPath, $"poziom{levelID}.png");
+            ResourceHelper.LoadPictureBoxImage(picBox, imagePath);
+
+            if (isUnlocked)
+            {
+                picBox.Cursor = Cursors.Hand;
+            }
+            else
+            {
+                picBox.Cursor = Cursors.Default;
+            }
+        }
+
+        /// <summary>
+        /// Method for loading graphics
+        /// </summary>
         private void LoadGraphics()
         {
             try
             {
-                // Load the images for the Level Selection buttons
-                string level1Path = Path.Combine(graphicsPath, "poziom1.png");
-                ResourceHelper.LoadPictureBoxImage(picLevel1, level1Path);
-
-                string level2Path = Path.Combine(graphicsPath, "poziom2.png");
-                ResourceHelper.LoadPictureBoxImage(picLevel2, level2Path);
-
-                string level3Path = Path.Combine(graphicsPath, "poziom3.png");
-                ResourceHelper.LoadPictureBoxImage(picLevel3, level3Path);
-
                 // Load the image for the Back Button
                 string backPath = Path.Combine(graphicsPath, "powrot.png");
                 ResourceHelper.LoadPictureBoxImage(picBack, backPath);
