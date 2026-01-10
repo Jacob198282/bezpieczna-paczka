@@ -16,13 +16,17 @@ namespace bezpieczna_paczkaApp
     /// </summary>
     public static class PlayerProgress
     {
+        /// <summary>
         /// Total number of levels available in the game
         /// Used for calculating the maximum possible stars a player can earn
         /// Update this value when adding new levels to the game
+        /// </summary>
         public const int TotalLevelsCount = 3;
 
+        /// <summary>
         /// Maximum number of stars that can be earned per single level
         /// Based on the scoring system: 90% = 1 star, 95% = 2 stars, 100% = 3 stars
+        /// </summary>
         public const int MaxStarsPerLevel = 3;
 
         /// <summary>
@@ -45,19 +49,29 @@ namespace bezpieczna_paczkaApp
         /// </summary>
         public const int TotalVehiclesCount = 3;
 
-        // Path to the progress save file
-        private static string? _saveFilePath; // It can be null
+        /// <summary>
+        /// Path to the progress save file
+        /// </summary>
+        private static string? saveFilePath; // It can be null
 
-        // Currently selected vehicle ID (player's choice among unlocked vehicles)
-        private static int _selectedVehicleID = 1;
+        /// <summary>
+        /// Currently selected vehicle ID (player's choice among unlocked vehicles)
+        /// </summary>
+        private static int selectedVehicleID = 1;
 
 
+        /// <summary>
         /// Dictionary storing the best star count achieved for each level
-        private static readonly Dictionary<int, int> _starsPerLevel = new Dictionary<int, int>();
+        /// </summary>
+        private static readonly Dictionary<int, int> starsPerLevel = new Dictionary<int, int>();
 
+        /// <summary>
         /// Records the number of stars earned for a specific level
         /// Implements "best score" logic - only updates if the new score is higher than previously saved
         /// This ensures that replaying a level with a worse result does not overwrite a better previous score
+        /// </summary>
+        /// <param name="levelID">ID of the level that the player completed</param>
+        /// <param name="stars">Number of the stars that player collected</param>
         public static void SetStars(int levelID, int stars)
         {
             // Ensure the stars value is within valID bounds (0 to MaxStarsPerLevel)
@@ -65,14 +79,14 @@ namespace bezpieczna_paczkaApp
             stars = Math.Clamp(stars, 0, MaxStarsPerLevel);
 
             // Check if this level has been played before
-            bool levelExistsInProgress = _starsPerLevel.ContainsKey(levelID);
+            bool levelExistsInProgress = starsPerLevel.ContainsKey(levelID);
 
             // Only update the score if:
             // This is the first time completing this level or
             // The new score is better than the previous best
-            if (!levelExistsInProgress || _starsPerLevel[levelID] < stars)
+            if (!levelExistsInProgress || starsPerLevel[levelID] < stars)
             {
-                _starsPerLevel[levelID] = stars;
+                starsPerLevel[levelID] = stars;
             }
         }
 
@@ -91,7 +105,7 @@ namespace bezpieczna_paczkaApp
                 Directory.CreateDirectory(configPath);
             }
 
-            _saveFilePath = Path.Combine(configPath, "progress.txt");
+            saveFilePath = Path.Combine(configPath, "progress.txt");
         }
 
         /// <summary>
@@ -100,7 +114,7 @@ namespace bezpieczna_paczkaApp
         /// </summary>
         public static void SaveProgress()
         {
-            if (string.IsNullOrEmpty(_saveFilePath))
+            if (string.IsNullOrEmpty(saveFilePath))
             {
                 System.Diagnostics.Debug.WriteLine("SaveProgress: path not initialized");
                 return;
@@ -111,15 +125,15 @@ namespace bezpieczna_paczkaApp
                 List<string> lines = new List<string>();
 
                 // Write each level's stars
-                foreach (var entry in _starsPerLevel)
+                foreach (var entry in starsPerLevel)
                 {
                     lines.Add($"level_{entry.Key}={entry.Value}");
                 }
 
                 // Write selected vehicle
-                lines.Add($"vehicle={_selectedVehicleID}");
+                lines.Add($"vehicle={selectedVehicleID}");
 
-                File.WriteAllLines(_saveFilePath, lines);
+                File.WriteAllLines(saveFilePath, lines);
             }
             catch (Exception ex)
             {
@@ -132,25 +146,25 @@ namespace bezpieczna_paczkaApp
         /// </summary>
         public static void LoadProgress()
         {
-            if (string.IsNullOrEmpty(_saveFilePath))
+            if (string.IsNullOrEmpty(saveFilePath))
             {
                 System.Diagnostics.Debug.WriteLine("LoadProgress: path not initialized");
                 return;
             }
 
             // Clear existing data
-            _starsPerLevel.Clear();
-            _selectedVehicleID = 1;
+            starsPerLevel.Clear();
+            selectedVehicleID = 1;
 
             // If no save file, start fresh
-            if (!File.Exists(_saveFilePath))
+            if (!File.Exists(saveFilePath))
             {
                 return;
             }
 
             try
             {
-                string[] lines = File.ReadAllLines(_saveFilePath);
+                string[] lines = File.ReadAllLines(saveFilePath);
 
                 foreach (string line in lines)
                 {
@@ -176,14 +190,14 @@ namespace bezpieczna_paczkaApp
                         if (int.TryParse(idString, out int levelId) &&
                             int.TryParse(valuePart, out int stars))
                         {
-                            _starsPerLevel[levelId] = Math.Clamp(stars, 0, MaxStarsPerLevel);
+                            starsPerLevel[levelId] = Math.Clamp(stars, 0, MaxStarsPerLevel);
                         }
                     }
                     else if (keyPart == "vehicle")
                     {
                         if (int.TryParse(valuePart, out int vehicleID))
                         {
-                            _selectedVehicleID = Math.Clamp(vehicleID, 1, TotalVehiclesCount);
+                            selectedVehicleID = Math.Clamp(vehicleID, 1, TotalVehiclesCount);
                         }
                     }
                     else
@@ -198,23 +212,29 @@ namespace bezpieczna_paczkaApp
             }
         }
 
+        /// <summary>
         /// Clears all saved progress, resetting the game to initial state
         /// Useful for implementing a "New Game" or "Reset Progress" feature
+        /// </summary>
         public static void ResetProgress()
         {
-            _starsPerLevel.Clear();
-            _selectedVehicleID = 1;
+            starsPerLevel.Clear();
+            selectedVehicleID = 1;
 
             SaveProgress();
         }
 
+        /// <summary>
         /// Retrieves the number of stars earned for a specific level
+        /// </summary>
+        /// <param name="levelID">ID of the level, from which the number of collected stars will be counted</param>
+        /// <returns>Number of stars</returns>
         public static int GetStars(int levelID)
         {
             // Use ContainsKey check to safely return 0 for levels not yet played
-            if (_starsPerLevel.ContainsKey(levelID))
+            if (starsPerLevel.ContainsKey(levelID))
             {
-                return _starsPerLevel[levelID];
+                return starsPerLevel[levelID];
             }
             else
             {
@@ -222,27 +242,57 @@ namespace bezpieczna_paczkaApp
             }
         }
 
+        /// <summary>
         /// Calculates the sum of all stars earned across all completed levels
         /// Used for displaying overall player progress in the level selection screen
+        /// </summary>
+        /// <returns>Number of total stars collected from all the levels</returns>
         public static int GetTotalStars()
         {
             // LINQ Sum() efficiently adds all values in the dictionary
-            return _starsPerLevel.Values.Sum();
+            return starsPerLevel.Values.Sum();
         }
 
+        /// <summary>
         /// Calculates the theoretical maximum stars achievable in the entire game
         /// Used for displaying progress in format "X / Y" (e.g., "5 / 9")
+        /// </summary>
+        /// <returns>Maximum achievable number of stars</returns>
         public static int GetMaxPossibleStars()
         {
             return TotalLevelsCount * MaxStarsPerLevel;
         }
 
+        /// <summary>
         /// Checks whether a specific level has been successfully completed
         /// A level is consIDered "completed" if the player earned at least 1 star
+        /// </summary>
+        /// <param name="levelID"></param>
+        /// <returns>True or false whether the level is completed or not</returns>
         public static bool IsLevelCompleted(int levelID)
         {
             // Level is completed if it exists in dictionary AND has at least 1 star
-            return _starsPerLevel.ContainsKey(levelID) && _starsPerLevel[levelID] > 0;
+            return starsPerLevel.ContainsKey(levelID) && starsPerLevel[levelID] > 0;
+        }
+
+        /// <summary>
+        /// Checks if a specific level is unlocked.
+        /// Level 1 is always unlocked.
+        /// Other levels require previous level to be completed.
+        /// </summary>
+        /// <param name="levelID">Level ID to check (1, 2, or 3)</param>
+        /// <returns>True if level is unlocked</returns>
+        public static bool IsLevelUnlocked(int levelID)
+        {
+            if (levelID <= 1)
+            {
+                // Level 1 is always unlocked
+                return true;
+            }
+
+            // Check if previous level is completed
+            int previousLevelID = levelID - 1;
+            return IsLevelCompleted(previousLevelID);
         }
 
         /// <summary>
@@ -252,9 +302,9 @@ namespace bezpieczna_paczkaApp
         public static int GetCurrentVehicleID()
         {
             // Check if selected vehicle is still unlocked
-            if (IsVehicleUnlocked(_selectedVehicleID))
+            if (IsVehicleUnlocked(selectedVehicleID))
             {
-                return _selectedVehicleID;
+                return selectedVehicleID;
             }
 
             int totalStars = GetTotalStars();
@@ -286,7 +336,7 @@ namespace bezpieczna_paczkaApp
                 return false;
             }
 
-            _selectedVehicleID = vehicleID;
+            selectedVehicleID = vehicleID;
             SaveProgress();
             return true;
         }
