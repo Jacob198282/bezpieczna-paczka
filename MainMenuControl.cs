@@ -9,14 +9,31 @@ using System.Windows.Forms;
 
 namespace bezpieczna_paczkaApp
 {
-    // UserControl for the main menu screen
+    /// <summary>
+    /// UserControl for the main menu screen
+    /// </summary>
     public partial class MainMenuControl : UserControl
     {
-        // Public event to notify the host form (GameWindow) when the level selection button is clicked
+        /// <summary>
+        /// Public event to notify the host form (GameWindow) when the level selection button is clicked
+        /// </summary>
         public event EventHandler? SelectLevelClicked;
 
-        public string projectRoot; // path to the project
-        public string graphicsPath; // path to folder with graphics
+        /// <summary>
+        /// path to the project
+        /// </summary>
+        public string projectRoot;
+
+        /// <summary>
+        /// path to folder with graphics
+        /// </summary>
+        public string graphicsPath; 
+
+        /// <summary>
+        /// MainMenuControl constructor
+        /// </summary>
+        /// <param name="projectRoot">File Path used for loading graphics to the project root</param>
+        /// <param name="graphicsPath">Combined root path and graphics folder used for loading graphics</param>
         public MainMenuControl(string projectRoot, string graphicsPath)
         {
             InitializeComponent();
@@ -27,29 +44,41 @@ namespace bezpieczna_paczkaApp
             this.graphicsPath = graphicsPath;
         }
 
-        // Handles the Click event for the 'Select Level' button
+        /// <summary>
+        /// Handles the Click event for the 'Select Level' button
+        /// </summary>
+        /// <param name="sender">PictureBox as a Select Level button</param>
+        /// <param name="e">Event arguments</param>
         private void picSelectLevel_Click(object sender, EventArgs e)
         {
             // Notify the GameWindow to switch screens.
             SelectLevelClicked?.Invoke(this, EventArgs.Empty);
         }
 
-        // Handles the Click event for the 'Exit Game' button
+        /// <summary>
+        /// Handles the Click event for the 'Exit Game' button
+        /// </summary>
+        /// <param name="sender">PictureBox as a Exit Game button</param>
+        /// <param name="e">Event arguments</param>
         private void picExitGame_Click(object sender, EventArgs e)
         {
             // Safely exits the application
             Application.Exit();
         }
-        
-        // Loading method for this UserControl
+
+        /// <summary>
+        /// Loading method for this UserControl
+        /// </summary>
+        /// <param name="sender">MainMenuControl object</param>
+        /// <param name="e">Event arguments</param>
         private void MainMenuConrol_Load(object sender, EventArgs e)
         {
             LoadGraphics(); // loading graphics for this UserControl
         }
 
-
+        /// <summary>
         /// Loads all graphical assets from the 'graphics' folder
-
+        /// </summary>
         private void LoadGraphics()
         {
             try
