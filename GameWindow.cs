@@ -9,21 +9,28 @@ using System.Windows.Forms;
 
 namespace bezpieczna_paczkaApp
 {
-
+    /// <summary>
     /// The main welcome screen for the 'Bezpieczna Paczka' game
-    /// It displays the logo and navigation buttons
-
+    /// It displays the logos and navigation buttons
+    /// </summary>
     public partial class GameWindow
     {
-
-        /// Constructor for the Welcome Form
         private MainMenuControl mainMenu;
         private LevelSelectControl levelSelect;
         private GameMenuControl gameMenu;
         private LevelGameplayControl? currentGameplay; // Nullable - it can not exist
-        public string projectRoot; // path to the project
-        public string graphicsPath; // path to folder with graphics
+        /// <summary>
+        /// path to the project
+        /// </summary>
+        public string projectRoot;
+        /// <summary>
+        /// path to folder with graphics
+        /// </summary>
+        public string graphicsPath; 
 
+        /// <summary>
+        /// Constructor for the GameWindow form
+        /// </summary>
         public GameWindow()
         {
             // This method is required for the designer support
@@ -57,6 +64,10 @@ namespace bezpieczna_paczkaApp
             PlayerProgress.Initialize(projectRoot);
             PlayerProgress.LoadProgress();
         }
+
+        /// <summary>
+        /// Method for stopping flickering of the applications while changing UserControls
+        /// </summary>
         protected override CreateParams CreateParams
         {
             get
@@ -70,7 +81,10 @@ namespace bezpieczna_paczkaApp
             }
         }
 
-        // helper function for user control switching
+        /// <summary>
+        /// Helper function for user control switching
+        /// </summary>
+        /// <param name="control">UserControl object which controls must be added to the pnlContainer</param>
         private void SetupControl(UserControl control)
         {
             control.Dock = DockStyle.Fill;
@@ -78,7 +92,11 @@ namespace bezpieczna_paczkaApp
             pnlContainer.Controls.Add(control);
         }
 
-        // function for switching between User Controls
+        /// <summary>
+        /// Function for switching between User Controls
+        /// </summary>
+        /// <param name="presentControl">Actually visible UserControl and the one to be hide now</param>
+        /// <param name="newControl">userControl that is wanted to be visible now</param>
         private void SwitchUserControl(UserControl presentControl, UserControl newControl)
         {
             presentControl.Visible = false;
@@ -87,22 +105,32 @@ namespace bezpieczna_paczkaApp
 
         // --- Event Handlers for UserControl events ---
 
+        /// <summary>
         /// Handler for the event raised by MainMenuControl when 'Select Level' is clicked
-
+        /// </summary>
+        /// <param name="sender">PictureBox that after click sends an event to switch from main menu to level select menu</param>
+        /// <param name="e">Event arguments</param>
         private void HandleSelectLevelClicked(object? sender, EventArgs e)
         {
             SwitchUserControl(mainMenu, levelSelect); // switch controls
         }
 
+        /// <summary>
         /// Handler for the event raised by LevelSelectControl when 'Back' is clicked
+        /// </summary>
+        /// <param name="sender">PictureBox that after click sends an event to switch from level select menu to main menu</param>
+        /// <param name="e"></param>
         private void HandleBackClicked(object? sender, EventArgs e)
         {
             // Call the existing method to switch back to the main menu view
             SwitchUserControl(levelSelect, mainMenu); // switch controls
         }
 
+        /// <summary>
         /// Handler for the event raised by LevelSelectControl when a level is chosen
-
+        /// </summary>
+        /// <param name="sender">PictureBox responsible for showing which level the player will play, e.g. Level 1, Level 2...</param>
+        /// <param name="e">Event arguments</param>
         private void HandleLevelSelected(object? sender, LevelSelectControl.LevelSelectedEventArgs e)
         {
             CleanupCurrentGameplay();
@@ -126,13 +154,19 @@ namespace bezpieczna_paczkaApp
         /// <summary>
         /// Handler for menu button being clicked during gameplay
         /// </summary>
+        /// <param name="sender">PictureBox responsible for menu button</param>
+        /// <param name="e">Event arguments</param>
         private void HandleMenuClicked(object? sender, EventArgs e)
         {
             gameMenu.BringToFront();
             gameMenu.Visible = true;
         }
 
+        /// <summary>
         /// Handles the event raised when a player completes all questions in a level
+        /// </summary>
+        /// <param name="sender">Method inside LevelGameplayControl class that completes the level</param>
+        /// <param name="e">Event arugments</param>
         private void HandleLevelCompleted(object? sender, LevelCompletedEventArgs e)
         {
             // Setting best score of the level
@@ -145,21 +179,21 @@ namespace bezpieczna_paczkaApp
 
             if (e.IsPassed)
             {
-                // player passed
-                resultMessage = $"Gratulacje! Ukonczyles poziom!\n\n" +
+                // Player passed
+                resultMessage = $"Gratulacje! Ukoñczy³es poziom!\n\n" +
                                $"Poprawne odpowiedzi: {e.CorrectAnswersCount}/{e.TotalQuestionsCount}\n" +
                                $"Zdobyte gwiazdki: {e.StarsEarned}/{PlayerProgress.MaxStarsPerLevel}";
 
-                messageTitle = "Poziom ukonczony!";
+                messageTitle = "Poziom ukoñczony!";
             }
             else
             {
                 // Player did not pass - show encouraging message to try again
-                resultMessage = $"Niestety, nie udalo sie ukonczyc poziomu.\n\n" +
+                resultMessage = $"Niestety, nie uda³o sie ukoñczyæ poziomu.\n\n" +
                                $"Poprawne odpowiedzi: {e.CorrectAnswersCount}/{e.TotalQuestionsCount}\n" +
-                               $"Sprobuj ponownie!";
+                               $"Spróbuj ponownie!";
 
-                messageTitle = "Sprobuj ponownie";
+                messageTitle = "Spróbuj ponownie";
             }
 
             // Display the result dialog to the player
@@ -204,7 +238,11 @@ namespace bezpieczna_paczkaApp
             }
         }
 
+        /// <summary>
         /// Handler for exiting the game and entering select level menu
+        /// </summary>
+        /// <param name="sender">PictureBox in LevelSelectControl responsible for exiting from game to level select menu</param>
+        /// <param name="e">Event arguments</param>
         private void HandleExitToLevelSelect(object? sender, EventArgs e)
         {
             gameMenu.Visible = false;
@@ -217,7 +255,11 @@ namespace bezpieczna_paczkaApp
             }
         }
 
+        /// <summary>
         /// Handler for back button in the in-game menu
+        /// </summary>
+        /// <param name="sender">PictureBox used as back button</param>
+        /// <param name="e">Event arguments</param>
         private void HandleResumeClicked(object? sender, EventArgs e)
         {
             gameMenu.Visible = false;
@@ -229,13 +271,19 @@ namespace bezpieczna_paczkaApp
             }
         }
 
-        // Function for loading stuff for the GameWindow
+        /// <summary>
+        /// Function for loading stuff for the GameWindow
+        /// </summary>
+        /// <param name="sender">GameWindow form</param>
+        /// <param name="e">Event arguments</param>
         private void GameWindow_Load(object? sender, EventArgs e)
         {
             LoadBackground();
         }
 
-        // function for loading background from the local directory ./graphics/
+        /// <summary>
+        /// Function for loading background from the local directory ./graphics/
+        /// </summary>
         private void LoadBackground()
         {
             try
