@@ -18,58 +18,105 @@ using System.Windows.Forms;
 
 namespace bezpieczna_paczkaApp
 {
+    /// <summary>
+    /// UserControl responsible for showing the game
+    /// </summary>
     public partial class LevelGameplayControl : UserControl
     {
-        // Event raised when the level is completed (all questions answered)
+        /// <summary>
+        /// Event raised when the level is completed (all questions answered)
+        /// </summary>
         public event EventHandler<LevelCompletedEventArgs>? LevelCompleted;
 
-        // Event raised when the player wants to open the in-level menu (pause/options)
+        /// <summary>
+        /// Event raised when the player wants to open the in-level menu (pause/options)
+        /// </summary>
         public event EventHandler? MenuRequested;
 
-        // Data for the current level (title, intro, questions)
-        private readonly LevelData _levelData;
+        /// <summary>
+        /// Data for the current level (title, intro, questions)
+        /// </summary>
+        private readonly LevelData levelData;
 
-        // Index of the currently displayed question (zero-based)
-        private int _currentQuestionIndex;
+        /// <summary>
+        /// Index of the currently displayed question (zero-based)
+        /// </summary>
+        private int currentQuestionIndex;
 
-        // Number of correctly answered questions in this level
-        private int _correctAnswersCount;
+        /// <summary>
+        /// Number of correctly answered questions in this level
+        /// </summary>
+        private int correctAnswersCount;
 
-        // Total number of question in this level
+        /// <summary>
+        /// Total number of question in this level
+        /// </summary>
         private int totalQuestionsCount;
 
-        // Maximum number of answer "buttons" (picture boxes) visible on the screen at once
+        /// <summary>
+        /// Maximum number of answer "buttons" (picture boxes) visible on the screen at once
+        /// </summary>
         private const int MaxAnswerButtons = 4; // Maximum number of answer options supported in the UI
 
-        // Font for the answer buttons, buttons and labels
+        /// <summary>
+        /// Font for the buttons and labels
+        /// </summary>
         public Font buttonFont;
-
+        /// <summary>
+        /// Font for answer buttons
+        /// </summary>
         public Font answerFont;
 
-        public string projectRoot; // path to the project
-        public string graphicsPath; // path to folder with graphics
-        public string scenarioPath; // path to folder containing scenario pictures
+        /// <summary>
+        /// path to the project
+        /// </summary>
+        public string projectRoot;
+        /// <summary>
+        /// path to folder with graphics
+        /// </summary>
+        public string graphicsPath;
+        /// <summary>
+        /// path to folder containing scenario pictures
+        /// </summary>
+        public string scenarioPath;
 
-        // ID of the vehicle used in current gameplay session
+        /// <summary>
+        /// ID of the vehicle used in current gameplay session
+        /// </summary>
         public int currentVehicleID;
 
-        // Time limit for each question in seconds
+        /// <summary>
+        /// Time limit for each question in seconds
+        /// </summary>
         private const int QUESTION_TIME_LIMIT = 30;
 
-        // Timer that counts down for each question
-        private System.Windows.Forms.Timer? _questionTimer;
+        /// <summary>
+        /// Timer that counts down for each question
+        /// </summary>
+        private System.Windows.Forms.Timer? questionTimer;
 
-        // Seconds remaining for current question
-        private int _secondsLeft;
+        /// <summary>
+        /// Seconds remaining for current question
+        /// </summary>
+        private int secondsLeft;
 
-        // Minigame control for package collection
-        private MiniGameControl? _minigame;
+        /// <summary>
+        /// Minigame control for package collection
+        /// </summary>
+        private MiniGameControl? minigame;
 
-        public LevelGameplayControl(LevelData levelData, string projectRoot, string graphicsPath)
+        /// <summary>
+        /// LevelGameplayControl constructor
+        /// </summary>
+        /// <param name="level">Which level will be played - with the details provided by the LevelData object</param>
+        /// <param name="projectRoot">File Path used for loading graphics to the project root</param>
+        /// <param name="graphicsPath">Combined root path and graphics folder used for loading graphics</param>
+        /// <exception cref="ArgumentNullException">In case of trying to load null LevelData object</exception>
+        public LevelGameplayControl(LevelData level, string projectRoot, string graphicsPath)
         {
-            if (levelData == null)
+            if (level == null)
             {
-                throw new ArgumentNullException(nameof(levelData));
+                throw new ArgumentNullException(nameof(level));
             }
 
             this.projectRoot = projectRoot;
@@ -77,7 +124,7 @@ namespace bezpieczna_paczkaApp
 
             scenarioPath = Path.Combine(graphicsPath, "scenario"); // Setting path to folder with scenario images
 
-            _levelData = levelData;
+            levelData = level;
 
             // Initialize fonts
             buttonFont = new Font("Gill Sans Ultra Bold", 20.25F, FontStyle.Italic, GraphicsUnit.Point, 238);
@@ -90,13 +137,15 @@ namespace bezpieczna_paczkaApp
             InitializeRuntimeState();  // Bind level data and load the first question
         }
 
-        // Initializes runtime state such as labels, question index and score
+        /// <summary>
+        /// Initializes runtime state such as labels, question index and score
+        /// </summary>
         private void InitializeRuntimeState()
         {
-            _currentQuestionIndex = 0;
-            _correctAnswersCount = 0;
+            currentQuestionIndex = 0;
+            correctAnswersCount = 0;
 
-            totalQuestionsCount = _levelData.Questions.Count; // setting total number of questions provided by LevelData
+            totalQuestionsCount = levelData.Questions.Count; // setting total number of questions provided by LevelData
 
             // Setup the intro
             SetupIntro();
@@ -108,8 +157,8 @@ namespace bezpieczna_paczkaApp
         private void SetupIntro()
         {
             // Step 1: Text Intro
-            lblIntroTitle.Text = _levelData.LevelTitle;
-            lblIntroDescription.Text = _levelData.IntroText;
+            lblIntroTitle.Text = levelData.LevelTitle;
+            lblIntroDescription.Text = levelData.IntroText;
 
             // Ensure the first step is visible and second is hidden
             pnlIntroStep1.Visible = true;
@@ -120,6 +169,8 @@ namespace bezpieczna_paczkaApp
         /// <summary>
         /// Handler for the 'Next' button in the first part of the intro
         /// </summary>
+        /// <param name="sender">Button Next</param>
+        /// <param name="e">Event arguments</param>
         private void btnNext_Click(object? sender, EventArgs e)
         {
             // Hiding the text panel
@@ -127,7 +178,7 @@ namespace bezpieczna_paczkaApp
 
             // Loading the tutorial image based on the level ID
             // Using naming convention 'znaki_poziom_{what level the player is playing}.png'
-            string tutorialImgName = $"znaki_poziom_{_levelData.LevelID}.png"; // Dynamic name using parameter of _levelData
+            string tutorialImgName = $"znaki_poziom_{levelData.LevelID}.png"; // Dynamic name using parameter of _levelData
             string fullPath = Path.Combine(graphicsPath, tutorialImgName);
 
             // Dispose previous tutorial image if exists
@@ -142,26 +193,29 @@ namespace bezpieczna_paczkaApp
         /// <summary>
         /// Handler for the final button that starts the actual game.
         /// </summary>
+        /// <param name="sender">Button Start Gameplay</param>
+        /// <param name="e">Event arguments</param>
         private void btnStartGameplay_Click(object? sender, EventArgs e)
         {
             // Hide the whole intro overlay
             pnlIntro.Visible = false;
-//            LoadQuestion(_currentQuestionIndex);
             StartMinigame();
         }
 
-        // Loads a single question by index and updates all UI elements accordingly
+        /// <summary>
+        /// Loads a single question by index and updates all UI elements accordingly
+        /// </summary>
+        /// <param name="questionIndex">Index of the intended question to load</param>
+        /// <exception cref="ArgumentOutOfRangeException">In case the index is out of range</exception>
         private void LoadQuestion(int questionIndex)
         {
             // Defensive check to avoid out-of-range errors
-            if (questionIndex < 0 || questionIndex >= _levelData.Questions.Count)
+            if (questionIndex < 0 || questionIndex >= levelData.Questions.Count)
             {
                 throw new ArgumentOutOfRangeException(nameof(questionIndex));
             }
 
-            //_lastRotation = 0f;
-
-            Question currentQuestion = _levelData.Questions[questionIndex];
+            Question currentQuestion = levelData.Questions[questionIndex];
 
             // Update question text label
             lblQuestionText.Text = currentQuestion.QuestionText;
@@ -177,13 +231,16 @@ namespace bezpieczna_paczkaApp
             DisplayAnswerOptions(currentQuestion.Options);
 
             // Update score label
-            lblScore.Text = $"Dostarczono {_correctAnswersCount}";
+            lblScore.Text = $"Dostarczono {correctAnswersCount}";
 
             // Start countdown timer for this question
             StartTimer();
         }
 
-        // Loads the scenario image from the given file path into the PictureBox
+        /// <summary>
+        /// Loads the scenario image from the given file path into the PictureBox
+        /// </summary>
+        /// <param name="scenarioID">ID of the scenario image needed to build a proper path</param>
         private void LoadScenarioImage(string scenarioID)
         {
             // Dispose previous image to free resources, if needed
@@ -214,7 +271,7 @@ namespace bezpieczna_paczkaApp
         /// <summary>
         /// Builds full path to scenario image based on scenario ID and current vehicle.
         /// </summary>
-        /// <param name="scenarioId">Scenario identifier (e.g., "1", "2", "3")</param>
+        /// <param name="scenarioID">Scenario identifier (e.g., "1", "2", "3")</param>
         /// <returns>Full path like "scenario/level_1/1_pojazd_1.png"</returns>
         private string BuildScenarioPath(string scenarioID)
         {
@@ -222,14 +279,17 @@ namespace bezpieczna_paczkaApp
             string fileName = $"{scenarioID}_pojazd_{currentVehicleID}.png";
 
             // Build folder path based on level ID
-            string folderName = $"level_{_levelData.LevelID}";
+            string folderName = $"level_{levelData.LevelID}";
             string scenarioLevelPath = Path.Combine(scenarioPath, folderName); // Setting path to folder containing scenarios for this level
 
             // Return complete path
             return Path.Combine(scenarioLevelPath, fileName);
         }
 
-        // Creates or updates answer "buttons" using PictureBox controls according to the provided list of options
+        /// <summary>
+        /// Creates or updates answer "buttons" using PictureBox controls according to the provided list of options
+        /// </summary>
+        /// <param name="options">List of the answers to be displayed</param>
         private void DisplayAnswerOptions(List<AnswerOption> options)
         {
             // Clear any existing controls in the answers panel
@@ -273,7 +333,11 @@ namespace bezpieczna_paczkaApp
             }
         }
 
-        // Handles player's click on one of the answer picture boxes
+        /// <summary>
+        /// Handles player's click on one of the answer picture boxes
+        /// </summary>
+        /// <param name="sender">Created answer button</param>
+        /// <param name="e">Event arguments</param>
         private void HandleAnswerButtonClick(object? sender, EventArgs e)
         {
             // Stop timer immediately when answer is clicked
@@ -318,8 +382,8 @@ namespace bezpieczna_paczkaApp
             // Evaluate the answer and update score
             if (selectedOption.IsCorrect)
             {
-                _correctAnswersCount++;
-                lblScore.Text = $"Dostarczono {_correctAnswersCount}"; // Immediatelly update score label
+                correctAnswersCount++;
+                lblScore.Text = $"Dostarczono {correctAnswersCount}"; // Immediatelly update score label
                 answerMessage = "Poprawna odpowiedź!";
             }
             else
@@ -334,15 +398,17 @@ namespace bezpieczna_paczkaApp
             GoToNextQuestionOrFinish();
         }
 
-        // Moves to the next question if available, otherwise completes the level
+        /// <summary>
+        /// Moves to the next question if available, otherwise completes the level
+        /// </summary>
         private void GoToNextQuestionOrFinish()
         {
             int lastQuestionIndex = totalQuestionsCount - 1; // Offset used to get the last index from the total count
 
-            if (_currentQuestionIndex < lastQuestionIndex)
+            if (currentQuestionIndex < lastQuestionIndex)
             {
-                _currentQuestionIndex++; // Step to move from current question to the next one
-                LoadQuestion(_currentQuestionIndex);
+                currentQuestionIndex++; // Step to move from current question to the next one
+                LoadQuestion(currentQuestionIndex);
             }
             else
             {
@@ -350,7 +416,9 @@ namespace bezpieczna_paczkaApp
             }
         }
 
-        // Calculates final result, checks if the level is passed and raises the LevelCompleted event
+        /// <summary>
+        /// Calculates final result, checks if the level is passed and raises the LevelCompleted event
+        /// </summary>
         private void CompleteLevel()
         {
             // Somehow incompleted level
@@ -360,29 +428,33 @@ namespace bezpieczna_paczkaApp
             }
 
             // Calculate the ratio of the answers
-            double correctRatio = (double)_correctAnswersCount / totalQuestionsCount;
+            double correctRatio = (double)correctAnswersCount / totalQuestionsCount;
 
             // Check if the player passed the test
-            bool isPassed = correctRatio >= _levelData.PassingThreshold;
+            bool isPassed = correctRatio >= levelData.PassingThreshold;
 
             // Calculate number of stars collected by player
             int starsEarned = CalculateStars(correctRatio);
 
             LevelCompletedEventArgs eventArgs = new LevelCompletedEventArgs
             {
-                CorrectAnswersCount = _correctAnswersCount,
+                CorrectAnswersCount = correctAnswersCount,
                 TotalQuestionsCount = totalQuestionsCount,
                 CorrectRatio = correctRatio,
                 StarsEarned = starsEarned,
                 IsPassed = isPassed,
-                LevelID = _levelData.LevelID
+                LevelID = levelData.LevelID
             };
 
             // Raise event
             LevelCompleted?.Invoke(this, eventArgs);
         }
 
+        /// <summary>
         /// Calculates the number of stars earned based on the player's correct answer ratio
+        /// </summary>
+        /// <param name="correctRatio">Ratio of correct answers as a player's score</param>
+        /// <returns>Ratio of the correct answers</returns>
         private int CalculateStars(double correctRatio)
         {
             // Check thresholds from highest to lowest
@@ -410,7 +482,11 @@ namespace bezpieczna_paczkaApp
             }
         }
 
-        // Handles click on the "Menu" picture button to request opening the in-level menu
+        /// <summary>
+        /// Handles click on the "Menu" picture button to request opening the in-level menu
+        /// </summary>
+        /// <param name="sender">PictureBox as a menu button</param>
+        /// <param name="e">Event arguments</param>
         private void picMenu_Click(object? sender, EventArgs e)
         {
             // Pause timer when opening menu
@@ -425,39 +501,43 @@ namespace bezpieczna_paczkaApp
         private void StartMinigame()
         {
             // Create minigame if not exists
-            if (_minigame == null)
+            if (minigame == null)
             {
-                _minigame = new MiniGameControl(graphicsPath);
-                _minigame.Dock = DockStyle.Fill;
-                _minigame.MinigameCompleted += OnMinigameCompleted;
-                _minigame.MenuRequested += OnMinigameMenuRequested;
-                Controls.Add(_minigame);
+                minigame = new MiniGameControl(graphicsPath);
+                minigame.Dock = DockStyle.Fill;
+                minigame.MinigameCompleted += OnMinigameCompleted;
+                minigame.MenuRequested += OnMinigameMenuRequested;
+                Controls.Add(minigame);
             }
 
             // Bring to front and start
-            _minigame.BringToFront();
-            _minigame.Visible = true;
-            _minigame.StartGame();
+            minigame.BringToFront();
+            minigame.Visible = true;
+            minigame.StartGame();
         }
 
         /// <summary>
-        /// Called when minigame is completed. Starts the Q&A phase.
+        /// Called when minigame is completed. Starts the question - answer phase.
         /// </summary>
+        /// <param name="sender">MiniGame UserControl's methods responsible for counting points</param>
+        /// <param name="e">Event arguments</param>
         private void OnMinigameCompleted(object? sender, EventArgs e)
         {
             // Hide minigame
-            if (_minigame != null)
+            if (minigame != null)
             {
-                _minigame.Visible = false;
+                minigame.Visible = false;
             }
 
             // Start questions
-            LoadQuestion(_currentQuestionIndex);
+            LoadQuestion(currentQuestionIndex);
         }
 
         /// <summary>
         /// Called when menu is requested from minigame.
         /// </summary>
+        /// <param name="sender">PictureBox as a menu button</param>
+        /// <param name="e">Event arguments</param>
         private void OnMinigameMenuRequested(object? sender, EventArgs e)
         {
             // Forward the menu request to GameWindow
@@ -469,14 +549,14 @@ namespace bezpieczna_paczkaApp
         /// </summary>
         private void CleanupMinigame()
         {
-            if (_minigame != null)
+            if (minigame != null)
             {
-                _minigame.StopGame();
-                _minigame.MinigameCompleted -= OnMinigameCompleted;
-                _minigame.MenuRequested -= OnMinigameMenuRequested;
-                Controls.Remove(_minigame);
-                _minigame.Dispose();
-                _minigame = null;
+                minigame.StopGame();
+                minigame.MinigameCompleted -= OnMinigameCompleted;
+                minigame.MenuRequested -= OnMinigameMenuRequested;
+                Controls.Remove(minigame);
+                minigame.Dispose();
+                minigame = null;
             }
         }
 
@@ -486,19 +566,19 @@ namespace bezpieczna_paczkaApp
         public void StartTimer()
         {
             // Initialize timer if not exists
-            if (_questionTimer == null)
+            if (questionTimer == null)
             {
-                _questionTimer = new System.Windows.Forms.Timer();
-                _questionTimer.Interval = 1000; // 1 second
-                _questionTimer.Tick += OnTimerTick;
+                questionTimer = new System.Windows.Forms.Timer();
+                questionTimer.Interval = 1000; // 1 second
+                questionTimer.Tick += OnTimerTick;
             }
 
             // Reset countdown
-            _secondsLeft = QUESTION_TIME_LIMIT;
+            secondsLeft = QUESTION_TIME_LIMIT;
             UpdateTimerDisplay();
 
             // Start counting
-            _questionTimer.Start();
+            questionTimer.Start();
         }
 
         /// <summary>
@@ -506,9 +586,9 @@ namespace bezpieczna_paczkaApp
         /// </summary>
         public void StopTimer()
         {
-            if (_questionTimer != null)
+            if (questionTimer != null)
             {
-                _questionTimer.Stop();
+                questionTimer.Stop();
             }
         }
 
@@ -517,9 +597,9 @@ namespace bezpieczna_paczkaApp
         /// </summary>
         public void ResumeTimer()
         {
-            if (_questionTimer != null && _secondsLeft > 0)
+            if (questionTimer != null && secondsLeft > 0)
             {
-                _questionTimer.Start();
+                questionTimer.Start();
             }
         }
 
@@ -528,9 +608,9 @@ namespace bezpieczna_paczkaApp
         /// </summary>
         public void ResumeMinigameOrTimer()
         {
-            if (_minigame != null && _minigame.Visible)
+            if (minigame != null && minigame.Visible)
             {
-                _minigame.ResumeGame();
+                minigame.ResumeGame();
             }
             else
             {
@@ -541,11 +621,13 @@ namespace bezpieczna_paczkaApp
         /// <summary>
         /// Called every second by the timer. Updates display and handles timeout.
         /// </summary>
+        /// <param name="sender">Timer object</param>
+        /// <param name="e">Event arguments</param>
         private void OnTimerTick(object? sender, EventArgs e)
         {
-            _secondsLeft--;
+            secondsLeft--;
 
-            if (_secondsLeft <= 0)
+            if (secondsLeft <= 0)
             {
                 // Time expired - treat as wrong answer
                 OnTimeExpired();
@@ -561,10 +643,10 @@ namespace bezpieczna_paczkaApp
         /// </summary>
         private void UpdateTimerDisplay()
         {
-            lblTimer.Text = $"Czas: {_secondsLeft}s";
+            lblTimer.Text = $"Czas: {secondsLeft}s";
 
             // Change color to red when less than 10 seconds
-            if (_secondsLeft <= 10)
+            if (secondsLeft <= 10)
             {
                 lblTimer.ForeColor = Color.Red;
             }
@@ -581,16 +663,32 @@ namespace bezpieczna_paczkaApp
         {
             StopTimer();
 
-            // Show timeout message
+            // Get current question
+            Question currentQuestion = levelData.Questions[currentQuestionIndex];
+
+            // Find correct answer
+            string correctAnswerText = "Brak poprawnej odpowiedzi";
+            foreach (AnswerOption option in currentQuestion.Options)
+            {
+                if (option.IsCorrect)
+                {
+                    correctAnswerText = option.AnswerText;
+                    break;
+                }
+            }
+
+            // Show timeout message with correct answer
             MessageBox.Show(
-                "Czas minął! Nie udzielono odpowiedzi.",
+                $"Czas minął! Nie udzielono odpowiedzi.\n\nPoprawna odpowiedź:\n{correctAnswerText}",
                 "Koniec czasu");
 
             // Move to next question (no points awarded)
             GoToNextQuestionOrFinish();
         }
 
-        // Loads graphical assets required by the gameplay screen
+        /// <summary>
+        /// Loads graphical assets required by the gameplay screen
+        /// </summary>
         private void LoadGraphics()
         {
             try
@@ -610,7 +708,7 @@ namespace bezpieczna_paczkaApp
                 ResourceHelper.LoadPictureBoxImage(picLogo, logoPath);
 
                 // Load image for the university logo
-                string uniPath = Path.Combine(graphicsPath, "pg_logo_czarne.png");
+                string uniPath = Path.Combine(graphicsPath, "pg_logo_bialy.png");
                 ResourceHelper.LoadPictureBoxImage(picUni, uniPath);
 
                 string bossPath = Path.Combine(graphicsPath, "szef.png");
@@ -652,25 +750,39 @@ namespace bezpieczna_paczkaApp
         }
     }
 
-    // Contains summary data about the finished level
+    /// <summary>
+    /// Contains summary data about the finished level
+    /// </summary>
     public class LevelCompletedEventArgs : EventArgs
     {
-        // Number of questions answered correctly by the player
+        /// <summary>
+        /// Number of questions answered correctly by the player
+        /// </summary>
         public int CorrectAnswersCount { get; set; }
 
-        // Total number of questions in the level
+        /// <summary>
+        /// Total number of questions in the level
+        /// </summary>
         public int TotalQuestionsCount { get; set; }
 
-        // Ratio of correct answers to total questions (0.0 - 1.0)
+        /// <summary>
+        /// Ratio of correct answers to total questions (0.0 - 1.0)
+        /// </summary>
         public double CorrectRatio { get; set; }
 
-        // Indicates whether the player has passed the level according to PassingThreshold
+        /// <summary>
+        /// Indicates whether the player has passed the level according to PassingThreshold
+        /// </summary>
         public bool IsPassed { get; set; }
 
+        /// <summary>
         /// The number of stars earned based on the player's performance
+        /// </summary>
         public int StarsEarned { get; set; }
 
+        /// <summary>
         /// The unique identifier of the level that was completed
+        /// </summary>
         public int LevelID { get; set; }
     }
 }

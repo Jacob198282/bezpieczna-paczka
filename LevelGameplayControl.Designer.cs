@@ -16,11 +16,11 @@
             if (disposing && (components != null))
             {
                 // Stop and dispose timer
-                if (_questionTimer != null)
+                if (questionTimer != null)
                 {
-                    _questionTimer.Stop();
-                    _questionTimer.Dispose();
-                    _questionTimer = null;
+                    questionTimer.Stop();
+                    questionTimer.Dispose();
+                    questionTimer = null;
                 }
 
                 // Cleanup minigame
@@ -255,7 +255,7 @@
             // 
             // lblIntroDescription
             // 
-            lblIntroDescription.Font = new Font("Gill Sans Ultra Bold Condensed", 20.25F, FontStyle.Italic, GraphicsUnit.Point, 238);
+            lblIntroDescription.Font = new Font("Gill Sans MT Condensed", 24F, FontStyle.Regular, GraphicsUnit.Point, 238);
             lblIntroDescription.ForeColor = SystemColors.ControlLight;
             lblIntroDescription.Location = new Point(240, 100);
             lblIntroDescription.Name = "lblIntroDescription";

@@ -12,26 +12,43 @@ using System.Threading.Tasks;
 
 namespace bezpieczna_paczkaApp
 {
+    /// <summary>
     /// Contains all data for a specific game level, including introduction and a set of questions.
+    /// </summary>
     public class LevelData
     {
-        // The title of the level 
+        /// <summary>
+        /// The title of the level 
+        /// </summary>
         public string LevelTitle { get; set; }
 
-        // The introductory text explaining the plot and rules for this specific part of the story
+        /// <summary>
+        /// The introductory text explaining the plot and rules for this specific part of the story
+        /// </summary>
         public string IntroText { get; set; }
 
-        // A collection of all questions/scenarios assigned to this level
+        /// <summary>
+        /// A collection of all questions/scenarios assigned to this level
+        /// </summary>
         public List<Question> Questions { get; set; }
 
-        // Required score to pass the level (at least one star)
-        // Expressed as a percentage, where 1.0 is 100%
+        /// <summary>
+        /// Required score to pass the level (at least one star)
+        /// Expressed as a percentage, where 1.0 is 100%
+        /// </summary>
         public double PassingThreshold = 0.90;
 
-        // identification of the current level
+        /// <summary>
+        /// identification of the current level
+        /// </summary>
         public int LevelID { get; set; }
 
+        /// <summary>
         /// Constructor for the LevelData class.
+        /// </summary>
+        /// <param name="id">Which level the player is playing</param>
+        /// <param name="title">Title of the level - displayed at the beginning</param>
+        /// <param name="intro">Intro of the level - displayed at the beginning</param>
         public LevelData(int id, string title, string intro)
         {
             LevelID = id;
