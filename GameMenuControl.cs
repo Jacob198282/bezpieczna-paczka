@@ -16,14 +16,31 @@ using System.Windows.Forms;
 
 namespace bezpieczna_paczkaApp
 {
+    /// <summary>
+    /// Class responsible for showing menu during gameplay
+    /// </summary>
     public partial class GameMenuControl : UserControl
     {
-        // Events to notify the parent container about user choices
+        /// <summary>
+        /// Events to notify the parent container about user choices
+        /// </summary>
         public event EventHandler? ResumeClicked;
         public event EventHandler? ExitToLevelSelectClicked;
 
-        public string projectRoot; // path to the project
-        public string graphicsPath; // path to folder with graphics
+        /// <summary>
+        /// path to the project
+        /// </summary>
+        public string projectRoot;
+        /// <summary>
+        /// path to folder with graphics
+        /// </summary>
+        public string graphicsPath;
+
+        /// <summary>
+        /// Game menu contructor
+        /// </summary>
+        /// <param name="projectRoot">File Path used for loading graphics to the project root</param>
+        /// <param name="graphicsPath">Combined root path and graphics folder used for loading graphics</param>
         public GameMenuControl(string projectRoot, string graphicsPath)
         {
             // Initialize component
@@ -39,24 +56,43 @@ namespace bezpieczna_paczkaApp
             picResume.BackColor = Color.Transparent;
             picLevelSelect.BackColor = Color.Transparent;
         }
+
+        /// <summary>
+        /// Handler for the resume button
+        /// </summary>
+        /// <param name="sender">PictureBox picResume that sends an event</param>
+        /// <param name="e">Arguments of an event</param>
         private void picResume_Click(object sender, EventArgs e)
         {
             // Fire the event to close the menu
             ResumeClicked?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Handler for select Level button
+        /// </summary>
+        /// <param name="sender">PictureBox picLevelSelect that sends an event</param>
+        /// <param name="e">Arguments of an event</param>
         private void picSelectLevel_Click(object sender, EventArgs e)
         {
             // Fire the event to go back to level selection
             ExitToLevelSelectClicked?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Handler for exit game button
+        /// </summary>
+        /// <param name="sender">PictureBox picExit that sends an event</param>
+        /// <param name="e">Arguments of an event</param>
         private void picExit_Click(object sender, EventArgs e)
         {
             // Close the entire application
             Application.Exit();
         }
 
+        /// <summary>
+        /// Method for loading graphics for the game menu
+        /// </summary>
         private void LoadGraphics()
         {
             try
@@ -83,7 +119,11 @@ namespace bezpieczna_paczkaApp
             }
         }
 
-        // Loading method for GameMenuControl User Control
+        /// <summary>
+        /// Loading method for GameMenuControl User Control
+        /// </summary>
+        /// <param name="sender">GameMenuControl object that sends load event</param>
+        /// <param name="e">Arguments of an event</param>
         private void GameMenuControl_Load(object sender, EventArgs e)
         {
             LoadGraphics();
