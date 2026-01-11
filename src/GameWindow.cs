@@ -180,7 +180,7 @@ namespace bezpieczna_paczkaApp
             if (e.IsPassed)
             {
                 // Player passed
-                resultMessage = $"Gratulacje! Ukoñczy³es poziom!\n\n" +
+                resultMessage = $"Gratulacje! Ukoñczy³eœ poziom!\n\n" +
                                $"Poprawne odpowiedzi: {e.CorrectAnswersCount}/{e.TotalQuestionsCount}\n" +
                                $"Zdobyte gwiazdki: {e.StarsEarned}/{PlayerProgress.MaxStarsPerLevel}";
 
