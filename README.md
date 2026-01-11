@@ -10,7 +10,9 @@ The project is devided between certain files:
 
 `res` - resources needed for the project, like images and configuration (progress tracking) files,
 
-`src` - source code for the application, in case of seeing and editing it.
+`src` - source code for the application, in case of seeing and editing it,
+
+`bezpieczna-paczkaVideo-compressed` - ZIP file containing gameplay video.
 ## How to run the game?
 There are two ways of running the game:
 - Open from `bin/Debug/net9.0-windows/` file called `bezpieczna-paczkaApp.exe` to directly open the game, or
