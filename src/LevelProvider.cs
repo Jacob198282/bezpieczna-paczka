@@ -392,7 +392,7 @@ namespace bezpieczna_paczkaApp
             ));
 
             q2.AddOption(new AnswerOption(
-                "Jestem uprzejmy, ale nie aż tak, więc drugi",
+                "Jestem uprzejmy, \nale nie aż tak, więc drugi",
                 false,
                 "Błąd! Jest to skrzyżowanie równorzędne i obowiązuje zasada prawej wolnej, więc wyjedziesz jako trzeci"
             ));
@@ -411,13 +411,13 @@ namespace bezpieczna_paczkaApp
             );
 
             q3.AddOption(new AnswerOption(
-                "Skręcam w prawo ustępując pierwszeństwa \n i dojeżdżając do celu",
+                "Skręcam w prawo \nustępując pierwszeństwa \n i dojeżdżając do celu",
                 true,
                 "Znak nakazuje skręcić w prawo i ustąpić pierwszeństwa nadjeżdżającym pojazdom"
             ));
 
             q3.AddOption(new AnswerOption(
-                "Skręcam w lewo zajeżdżając \ndo stacji benzynowej",
+                "Skręcam w lewo \nzajeżdżając \ndo stacji benzynowej",
                 false,
                 "Błąd! Znak nakazuje skręcić w prawo i ustąpić pierwszeństwa"
             ));
@@ -436,13 +436,13 @@ namespace bezpieczna_paczkaApp
             );
 
             q4.AddOption(new AnswerOption(
-                "Przejazd kolejowy bez zapór",
+                "Przejazd kolejowy \nbez zapór",
                 true,
                 "Znak wskazuje na przejazd kolejowy nie wyposażony w zapory ani półzapory"
             ));
 
             q4.AddOption(new AnswerOption(
-                "Przejazd przez tory kolejowe",
+                "Przejazd przez \ntory kolejowe",
                 false,
                 "Błąd! Znak wskazuje na przejazd kolejowy nie wyposażony w zapory ani półzapory"
             ));
@@ -454,7 +454,7 @@ namespace bezpieczna_paczkaApp
             ));
 
             q4.AddOption(new AnswerOption(
-                "Lokomotywownia Tomka i Przyjaciół ;)",
+                "Lokomotywownia \nTomka \ni Przyjaciół ;)",
                 false,
                 "Błąd! Znak wskazuje na przejazd kolejowy nie wyposażony w zapory ani półzapory"
             ));
@@ -485,7 +485,7 @@ namespace bezpieczna_paczkaApp
             ));
 
             q5.AddOption(new AnswerOption(
-                "Nie ma to znaczenia - i tak jedziemy na wprost",
+                "Nie ma to znaczenia \n- i tak jedziemy na wprost",
                 false,
                 "Błąd! Znak wskazuje, że na kierowcy na rondzie mają pierwszeństwo i należy wjechać na rondo, gdy będzie wolna droga"
             ));
